@@ -20,6 +20,7 @@ const getApiData = async (apiUrl) => {
 };
 
 
+
 const postData = async (apiUrl, data, config = {}) => {
   console.log("data", data, apiUrl);
   try {
@@ -526,19 +527,7 @@ export const getAdminLogs = async () => {
   }
 };
 
-// ===========================Member Dashboard API ===================
-const memberDashboardStatsApiUrl = `${APiUrl}stats/`;
 
-// Function to fetch dashboard statistics
-export const getDashboardStats = async (token) => {
-  try {
-    const response = await api.get(memberDashboardStatsApiUrl);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching dashboard stats:", error.message);
-    return { success: false, message: error.message };
-  }
-};
 
 // =========================== Change Password API ===================
 export const changePassword = async (data, token) => {
@@ -791,16 +780,7 @@ export const getIdCardAndCertificate = async (type = "", token) => {
 
 
 
-// Member Dashboard API
-const memberDashboardApiUrl = `${APiUrl}member/dashboard-info/`;
 
-// Function to fetch member dashboard details
-export const getMemberDashboard = async () => {
-  const token = sessionStorage.getItem('token');
-  return getApiData(memberDashboardApiUrl, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-};
 
 
 // ===========================Pending Payments API ===================

@@ -1,6 +1,5 @@
 
 
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getProposers, createProposer, updateProposer } from '../../../Services/ApiServices/ApiService';
 
@@ -10,31 +9,44 @@ export const fetchProposers = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const response = await getProposers(token);
-      return response.data;
+      return response.data; 
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch proposers');
     }
   }
 );
 
+
+// export const createNewProposer = createAsyncThunk(
+//   'proposers/createProposer',
+//   async ({ data, token }, { rejectWithValue }) => {
+//     try {
+//       const response = await createProposer({ proposers: [data] }, token); 
+//       return response.data[0]; 
+//     } catch (error) {
+//       return rejectWithValue(error.message || 'Failed to create proposer');
+//     }
+//   }
+// );
 export const createNewProposer = createAsyncThunk(
   'proposers/createProposer',
   async ({ data, token }, { rejectWithValue }) => {
     try {
-      const response = await createProposer({ proposers: [data] }, token);
-      return response.data;
+      const response = await createProposer({ proposers: [data] }, token); 
+      return response.data; // Return full response (not just proposer)
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to create proposer');
     }
   }
 );
 
+
 export const updateExistingProposer = createAsyncThunk(
   'proposers/updateProposer',
   async ({ id, data, token }, { rejectWithValue }) => {
     try {
       const response = await updateProposer(id, data, token);
-      return response.data;
+      return response.data[0]; // Backend returns array
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to update proposer');
     }
@@ -46,7 +58,7 @@ const initialState = {
   proposers: [],
   loading: false,
   error: null,
-  exposure: null,
+   exposure: null,
   electronics_experience: null,
   area_of_specialization: null,
   pagination: {
@@ -64,15 +76,6 @@ const proposerSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setExposure: (state, action) => {
-      state.exposure = action.payload;
-    },
-    setElectronicsExperience: (state, action) => {
-      state.electronics_experience = action.payload;
-    },
-    setAreaOfSpecialization: (state, action) => {
-      state.area_of_specialization = action.payload;
-    },
   },
   extraReducers: (builder) => {
     // Fetch all proposers
@@ -89,9 +92,7 @@ const proposerSlice = createSlice({
           next: action.payload?.next || null,
           previous: action.payload?.previous || null,
         };
-        state.exposure = action.payload?.exposure ?? null;
-        state.electronics_experience = action.payload?.electronics_experience ?? null;
-        state.area_of_specialization = action.payload?.area_of_specialization ?? null;
+        console.log("Fetched proposers:", state.proposers);
       })
       .addCase(fetchProposers.rejected, (state, action) => {
         state.loading = false;
@@ -104,16 +105,22 @@ const proposerSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+      // .addCase(createNewProposer.fulfilled, (state, action) => {
+      //   state.loading = false;
+      //   state.proposers.push(action.payload);
+      // })
       .addCase(createNewProposer.fulfilled, (state, action) => {
-        state.loading = false;
-        const proposer = action.payload?.proposers?.[0];
-        if (proposer) {
-          state.proposers.push(proposer);
-        }
-        state.exposure = action.payload?.exposure ?? null;
-        state.electronics_experience = action.payload?.electronics_experience ?? null;
-        state.area_of_specialization = action.payload?.area_of_specialization ?? null;
-      })
+  state.loading = false;
+  const proposer = action.payload.data?.[0];
+  if (proposer) {
+    state.proposers.push(proposer);
+  }
+
+  // Update the 3 new fields
+  state.exposure = action.payload.exposure ?? null;
+  state.electronics_experience = action.payload.electronics_experience ?? null;
+  state.area_of_specialization = action.payload.area_of_specialization ?? null;
+})
       .addCase(createNewProposer.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -127,14 +134,14 @@ const proposerSlice = createSlice({
       })
       .addCase(updateExistingProposer.fulfilled, (state, action) => {
         state.loading = false;
-        const updatedProposer = action.payload;
-        const index = state.proposers.findIndex((p) => p.id === updatedProposer.id);
+        const index = state.proposers.findIndex((p) => p.id === action.payload.id);
         if (index !== -1) {
-          state.proposers[index] = { ...state.proposers[index], ...updatedProposer };
+          state.proposers[index] = action.payload;
         }
-        state.exposure = action.payload?.exposure ?? state.exposure;
-        state.electronics_experience = action.payload?.electronics_experience ?? state.electronics_experience;
-        state.area_of_specialization = action.payload?.area_of_specialization ?? state.area_of_specialization;
+        // Update the 3 new fields
+        state.exposure = action.payload.exposure ?? null;
+        state.electronics_experience = action.payload.electronics_experience ?? null;
+        state.area_of_specialization = action.payload.area_of_specialization ?? null;
       })
       .addCase(updateExistingProposer.rejected, (state, action) => {
         state.loading = false;
@@ -144,5 +151,7 @@ const proposerSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { clearError, setExposure, setElectronicsExperience, setAreaOfSpecialization } = proposerSlice.actions;
+export const { clearError } = proposerSlice.actions;
 export default proposerSlice.reducer;
+
+

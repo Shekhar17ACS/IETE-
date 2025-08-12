@@ -42,7 +42,7 @@ import MemberHeader from './Memberdash/MemberHeader';
 import MemberLayout from './Memberdash/MemberLayout';
 import MemberHome from './Memberdash/MemberHome';
 import MemberSidebar from './Memberdash/MemberSidebar';
-import Analytics from './Memberdash/Analytics';
+
 import MemberProfile from './Memberdash/MemberProfile';
 import ApplicationManagement from './Memberdash/ApplicationManagement';
 import Config from './Memberdash/Config';
@@ -170,7 +170,7 @@ function App() {
                 <Route path="Role" element={<RoleManagement />} />
                 <Route path="add-member" element={<EmployeeManagement />} />
                 <Route path="Audit-log" element={<AuditLogs />} />
-                <Route path="Analytics" element={<Analytics />} />
+          
                 <Route path="MemberHeader" element={<MemberHeader />} />
                 <Route path="MemberProfile" element={<MemberProfile />} />
                 <Route path="Applicants" element={<ApplicationManagement />} />

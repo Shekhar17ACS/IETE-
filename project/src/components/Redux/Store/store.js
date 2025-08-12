@@ -13,7 +13,7 @@ import documentSlice from "../ReduxSlice/documentSlice"
 import membershipFeeSlice from "../ReduxSlice/membershipFeeSlice" 
 import paymentSlice from "../ReduxSlice/paymentSlice";
 import applicationPreviewSlice from "../ReduxSlice/applicationPreviewSlice";
-import dashboardStatsSlice from "../ReduxSlice/dashboardStatsSlice";
+
 
 const store = configureStore({
   reducer: {
@@ -30,7 +30,7 @@ const store = configureStore({
     membershipFee: membershipFeeSlice, 
     payment: paymentSlice,
     applicationPreview: applicationPreviewSlice,
-    dashboardStats: dashboardStatsSlice,
+
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

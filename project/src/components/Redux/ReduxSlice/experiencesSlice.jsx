@@ -1,6 +1,5 @@
 
 
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   createExperience,
@@ -52,10 +51,10 @@ export const getExperiencesData = createAsyncThunk(
   }
 );
 
-// Async thunk for adding/updating experiences
+// Async thunk for adding experiences (supports bulk)
 export const addExperience = createAsyncThunk(
   "experiences/addExperience",
-  async (experienceData, { getState, rejectWithValue, dispatch }) => {
+  async (experienceData, { getState, rejectWithValue }) => {
     const state = getState();
     const token = state.LoginUser?.token || sessionStorage.getItem("token");
 
@@ -63,87 +62,36 @@ export const addExperience = createAsyncThunk(
       return rejectWithValue("Authentication required. Please log in.");
     }
 
+    // Convert experienceData to FormData with indexed fields
+    const formData = new FormData();
+    experienceData.forEach((exp, index) => {
+      const idx = index + 1;
+      formData.append(`organization_name_${idx}`, exp.organization_name || "");
+      formData.append(`employee_type_${idx}`, exp.employee_type || "");
+      formData.append(`job_title_${idx}`, exp.job_title || "");
+      formData.append(`currently_working_${idx}`, exp.currently_working ? "true" : "false");
+      formData.append(`start_date_${idx}`, exp.start_date || "");
+      if (!exp.currently_working && exp.end_date) {
+        formData.append(`end_date_${idx}`, exp.end_date);
+      }
+      formData.append(`work_type_${idx}`, exp.work_type || "");
+      formData.append(`total_experience_${idx}`, exp.total_experience || "");
+    });
+
     try {
-      const experiencesToCreate = [];
-      const experiencesToUpdate = [];
+      const response = await createExperience(formData, token);
+      console.log("addExperience Response:", response);
 
-      // Separate experiences into create and update based on IDs
-      experienceData.forEach((exp) => {
-        if (
-          exp.organization_name &&
-          exp.job_title &&
-          exp.start_date &&
-          exp.work_type
-        ) {
-          const experience = {
-            id: exp.id || null,
-            organization_name: exp.organization_name || "",
-            employee_type: exp.employee_type || "",
-            job_title: exp.job_title || "",
-            currently_working: exp.currently_working || false,
-            start_date: exp.start_date || "",
-            end_date: exp.currently_working ? "" : exp.end_date || "",
-            work_type: exp.work_type || "",
-            total_experience: exp.total_experience || "",
-          };
-          if (experience.id) {
-            experiencesToUpdate.push(experience);
-          } else {
-            experiencesToCreate.push(experience);
-          }
-        }
-      });
-
-      if (experiencesToCreate.length === 0 && experiencesToUpdate.length === 0) {
-        return rejectWithValue("No valid experiences to submit.");
+      if (response.status === "success" && Array.isArray(response.data)) {
+        toast.success(response.message || "Experience(s) added successfully!");
+        return response.data; // Array of created experiences
       }
-
-      const results = [];
-
-      // Handle updates
-      for (const exp of experiencesToUpdate) {
-        const response = await dispatch(
-          editExperience({ id: exp.id, experienceData: exp })
-        ).unwrap();
-        results.push(response);
-      }
-
-      // Handle creations
-      if (experiencesToCreate.length > 0) {
-        const formData = new FormData();
-        experiencesToCreate.forEach((exp, index) => {
-          const idx = index + 1;
-          formData.append(`organization_name_${idx}`, exp.organization_name);
-          formData.append(`employee_type_${idx}`, exp.employee_type);
-          formData.append(`job_title_${idx}`, exp.job_title);
-          formData.append(`currently_working_${idx}`, exp.currently_working ? "true" : "false");
-          formData.append(`start_date_${idx}`, exp.start_date);
-          if (!exp.currently_working && exp.end_date) {
-            formData.append(`end_date_${idx}`, exp.end_date);
-          }
-          formData.append(`work_type_${idx}`, exp.work_type);
-          formData.append(`total_experience_${idx}`, exp.total_experience);
-        });
-
-        const response = await createExperience(formData, token);
-        console.log("addExperience Response:", response);
-        if (response.status === "success" && Array.isArray(response.data)) {
-          results.push(...response.data);
-        } else {
-          return rejectWithValue(
-            response.errors?.join(", ") || response.message || "Failed to add experience(s)"
-          );
-        }
-      }
-
-      if (results.length > 0) {
-        toast.success("Experience(s) processed successfully!");
-        return results;
-      }
-      return rejectWithValue("No experiences were processed.");
+      return rejectWithValue(
+        response.errors?.join(", ") || response.message || "Failed to add experience(s)"
+      );
     } catch (error) {
-      console.error("Error processing experiences:", error);
-      const message = error.response?.data?.message || error.message || "Failed to process experiences";
+      console.error("Error adding experience:", error);
+      const message = error.response?.data?.message || error.message || "Failed to add experience(s)";
       return rejectWithValue(message);
     }
   }
@@ -204,10 +152,10 @@ export const removeExperience = createAsyncThunk(
         toast.success(response.message || "Experience deleted successfully!");
         return experienceId; // Return the deleted ID
       }
-      return rejectWithValue(response.message || "Failed to delete experience");
+      return rejectWithValue(response.message );
     } catch (error) {
       console.error("Error deleting experience:", error);
-      const message = error.response?.data?.message || error.message || "Failed to delete experience";
+      const message = "Failed to delete experience";
       return rejectWithValue(message);
     }
   }
@@ -264,6 +212,15 @@ const experiencesSlice = createSlice({
         state.formEntries[index] = { ...state.formEntries[index], [name]: value };
       }
     },
+    // getExperiencesFormEntry: (state, action) => {
+    //   state.experiences = action.payload.experiences || [];
+    //   state.pagination = action.payload.pagination || { count: 0, next: null, previous: null };
+    //   // Sync formEntries with fetched experiences
+    //   state.formEntries = action.payload.experiences.length
+    //     ? action.payload.experiences.map(mapExperienceToFormEntry)
+    //     : [{ ...initialState.formEntries[0] }];
+    //   console.log("Updated formEntries:", state.formEntries);
+    // },
     addExperienceFormEntry: (state) => {
       if (state.formEntries.length < 9) {
         state.formEntries.push({ ...initialState.formEntries[0] });
@@ -306,39 +263,16 @@ const experiencesSlice = createSlice({
         state.formEntries = [{ ...initialState.formEntries[0] }];
         toast.error(action.payload);
       })
-      // Add/Update Experience
+      // Add Experience
       .addCase(addExperience.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(addExperience.fulfilled, (state, action) => {
         state.loading = false;
-        const newExperiences = Array.isArray(action.payload) ? action.payload : [action.payload];
-
-        // Update or add experiences, avoiding duplicates
-        newExperiences.forEach((newExp) => {
-          const index = state.experiences.findIndex((exp) => exp.id === newExp.id);
-          if (index !== -1) {
-            // Update existing experience
-            state.experiences[index] = newExp;
-            const formIndex = state.formEntries.findIndex((entry) => entry.id === newExp.id);
-            if (formIndex !== -1) {
-              state.formEntries[formIndex] = mapExperienceToFormEntry(newExp);
-            }
-          } else {
-            // Add new experience
-            state.experiences.push(newExp);
-            state.formEntries.push(mapExperienceToFormEntry(newExp));
-          }
-        });
-
-        // Ensure formEntries doesn't have empty entries beyond what's needed
-        state.formEntries = state.formEntries.filter(
-          (entry) => entry.id || Object.values(entry).some((val) => val && val !== false)
-        );
-        if (state.formEntries.length === 0) {
-          state.formEntries.push({ ...initialState.formEntries[0] });
-        }
+        state.experiences = [...state.experiences, ...action.payload];
+        // Update formEntries with new experiences
+        state.formEntries = action.payload.map(mapExperienceToFormEntry);
         console.log("Updated formEntries after add:", state.formEntries);
       })
       .addCase(addExperience.rejected, (state, action) => {
@@ -361,8 +295,6 @@ const experiencesSlice = createSlice({
         const formIndex = state.formEntries.findIndex((entry) => entry.id === action.payload.id);
         if (formIndex !== -1) {
           state.formEntries[formIndex] = mapExperienceToFormEntry(action.payload);
-        } else {
-          state.formEntries.push(mapExperienceToFormEntry(action.payload));
         }
         console.log("Updated formEntries after edit:", state.formEntries);
       })
@@ -396,9 +328,11 @@ const experiencesSlice = createSlice({
 // Export actions and reducer
 export const {
   resetExperiences,
+  getExperiencesFormEntry,
   updateExperienceFormEntry,
   addExperienceFormEntry,
   removeExperienceFormEntry,
   resetExperienceFormEntries,
 } = experiencesSlice.actions;
 export default experiencesSlice.reducer;
+

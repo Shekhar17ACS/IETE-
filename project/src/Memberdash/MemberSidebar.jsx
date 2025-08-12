@@ -81,7 +81,6 @@ const menuItems = {
       icon: LayoutDashboard,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "Analytics", path: "/Memberdashboard/Analytics", icon: LucideFileBarChart },
         { label: "Profile", path: "/Memberdashboard/MemberProfile", icon: GroupIcon }
       ]
     }
@@ -113,7 +112,6 @@ const menuItems = {
         { label: "Reports", path: "/Memberdashboard/Reports", icon: FileText },
         { label: "Approval Status", path: "/Memberdashboard/Approval_Stats", icon: LucideFileBarChart },
         { label: "Profile", path: "/Memberdashboard/MemberProfile", icon: GroupIcon },
-        { label: "Analytics", path: "/Memberdashboard/Analytics", icon: LucideFileBarChart }
       ]
     }
   ],
