@@ -1,0 +1,185 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IETE Certificate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        .dancing-script-content {
+            font-family: "Dancing Script", cursive;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        .certificate {
+            width: 100%;
+            height: 794px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            right: 50px;
+            text-align: center;
+        }
+
+        .top-bar img.decor {
+            height: 100px;
+            width: 100px;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 50px;
+        }
+
+        .logo {
+            margin: 10px auto 0;
+            text-align: center;
+        }
+
+        .logo img {
+            height: 70px;
+        }
+
+        .membership-info {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .certificate-no {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .name {
+            font-size: 22px;
+            color: #1d19a3;
+            font-weight: bold;
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            font-style: italic;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .designation {
+            font-size: 20px;
+            font-style: italic;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 18px;
+            font-style: italic;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+
+        .seal {
+            position: absolute;
+            left: 50px;
+            bottom: 180px;
+        }
+
+        .seal img {
+            width: 60px;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin: 100px 50px 0;
+        }
+
+        .signatures div {
+            text-align: center;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .signatures img {
+            height: 40px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <div class="membership-info">Membership No: {{ membership_no }}</div>
+        <div class="certificate-no">Certificate No: {{ certificate_no }}</div>
+
+        <div class="top-bar">
+            <img src="{{ border_url }}" alt="Decorative border" class="decor">
+        </div>
+
+        <div class="header">
+            THE INSTITUTION OF ELECTRONICS AND<br>TELECOMMUNICATION ENGINEERS
+        </div>
+
+        <div class="logo">
+            <img src="{{ logo_url }}" alt="IETE Logo">
+        </div>
+
+        <div class="content dancing-script-content">
+            <h2>This Certificate is granted to</h2>
+            <div class="name">{{ name }}</div>
+            <div class="subtitle">on election as</div>
+            <div class="designation">{{ membership_type }}</div>
+            <div class="description">
+                of the Institution on the <strong>{{ enroll_date }}</strong><br>
+                Witness our hand and seal at New Delhi<br>
+                this <strong>27<sup>th</sup></strong> day of January 2025
+            </div>
+        </div>
+
+        <div class="seal">
+            <img src="{{ seal_url }}" alt="Seal">
+        </div>
+
+        <div class="signatures">
+            <div>
+                <img src="{{ president_signature_url }}" alt="President Signature"><br>
+                <div>President</div>
+            </div>
+            <div>
+                <img src="{{ secretary_signature_url }}" alt="Secretary Signature"><br>
+                <div>Secretary General</div>
+            </div>
+        </div>
+
+        <div class="footer">This Certificate is the property of the Institution</div>
+    </div>
+</body>
+</html>

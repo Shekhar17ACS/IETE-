@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IETE Full ID Card</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .id-card {
+            flex: 1;
+            background: #fff;
+            border: 1.5px solid #000;
+            box-sizing: border-box;
+            height: auto;
+        }
+        .id-card-header {
+            color: rgb(255, 255, 255);
+            display: flex;
+            align-items: center;
+        }
+        .header-logo {
+            width: 90px;
+            text-align: center;
+        }
+
+        .header-logo img {
+            width: 85px;
+            height: auto;
+        }
+
+        .logo-text {
+            font-size: 9px;
+            margin-top: 4px;
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-content-inside {
+            margin: 8px;
+        }
+
+        .header-content h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .header-content p {
+            font-size: 12px;
+            margin: 2px 0;
+        }
+
+        .id-card-title {
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        .id-card-subtitle {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 0;
+        }
+
+        .enrol-date {
+            text-align: right;
+            font-size: 13px;
+            margin: 5px 15px 0;
+        }
+
+        .id-card-body {
+            display: flex;
+            padding: 10px 15px 15px;
+        }
+        .user-photo {
+            width: 100px;
+            text-align: center;
+        }
+
+        .user-photo img {
+            width: 100px;
+            height: 120px;
+            border: 1px solid #000;
+            object-fit: cover;
+        }
+        .user-info {
+            flex: 1;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .user-info p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .user-info .label {
+            font-weight: bold;
+        }
+
+        .signature {
+            text-align: right;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+
+        .back-side {
+            flex: 1;
+            border: 1.5px solid black;
+            background: white;
+            padding: 8px;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-y: auto;
+            height: auto;
+        }
+
+        .header-content-inside {
+            margin: 8px;
+        }
+
+        .back-side pre {
+            white-space: pre-wrap;
+            font-family: Arial, sans-serif;
+        }
+
+        #header-green {
+            background-color: rgb(23, 195, 23);
+            color: white;
+        }
+
+        #header-blue {
+            background-color: blue;
+            color: white;
+        }
+
+        #header-red {
+            background-color: red;
+            color: white;
+        }
+
+        #header-default {
+            background-color: rgb(72, 152, 87);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="id-card">
+            <div class="id-card-header">
+                <div class="header-logo">
+                    <img src="{{ authorization_signature_url }}" id="{{ header_class }}" alt="Logo">
+                </div>
+                <div class="header-content" id="{{ header_class }}">
+                    <div class="header-content-inside">
+                        <h2>THE INSTITUTION OF ELECTRONICS AND TELECOMMUNICATION ENGINEERS</h2>
+                        <p>2, Institutional Area, Lodhi Road, New Delhi-110003</p>
+                        <p>Ph.: +91 (011) 45142153, 24649429</p>
+                        <p>E-mail: membership@iete.org</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="id-card-title">LIFE MEMBERSHIP CARD</div>
+            <div class="id-card-subtitle">(NON-TRANSFERABLE)</div>
+            <div class="enrol-date"><strong>Enrol Dt.:</strong> {{ enroll_date |date:"d-m-Y" }}</div>
+            <div class="id-card-body">
+                <div class="user-photo">
+                    <img src="{{ user_image_url }}" alt="User Photo">
+                </div>
+                <div class="user-info">
+                    <p><span class="label">Mem. No.:</span>{{ membership_id }}</p>
+                    <p><span class="label">Name:</span> {{ name }}</p>
+                    <p><span class="label">DOB:</span> {{ date_of_birth |date:"d-m-Y" }}</p>
+
+                    <div class="signature">
+                        Brig Arun Sehgal (Retd)<br><strong>Secretary General</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="back-side">
+            <pre>
+                <strong>CENNAME </strong>        <strong>Address</strong>
+                Ahmedabad       906 Opp. Army Base Workshop Agra Cantt - 282 001
+                Allahabad       IETE Building, J. K. Institute of Applied Physics & Technology, University of Allahabad, Allahabad-211 002
+                Amritsar        C/o Amity Institute of Telecom Technology & Management, IInd Block, Ground Floor Amity, University Campus, Sector 125, Noida-201 303
+                Aurangabad      Department of Computer Science and IT, Dr Babasaheb Ambedkar Marathwada University, Aurangabad - 431 004
+                Bengaluru       IETE Building, Bellary Road Ganganagar Extn, Bengaluru – 560 032
+                Bhopal          IETE Bhopal Centre Hall No.-3 Gencmartt Park, Jawahar Chowk North TT Nagar, Bhopal- 462 003 (MP)
+                Bhubaneswar     Room no. 2/6 Barabhuja Commercial Complex Khandagiri, P O Khandagiri , Bhubaneswar-751 030
+                Chandigarh      Plot No. M-925, IETE Building, Sector 80 B Chandigarh-160 030
+                Chennai         C/o Dept. of Physics, The University of Burdwan, Golapbag, Burdwan - 713 104 (WB)
+                Coimbatore      C/o Amrita Vishva Vidyapeeth (Deemed-to-be University), Amrita Nagar PO, Ettimadai, Coimbatore,Tamil Nadu-641112
+                Delhi           1/5-B, Sri Aurobindo Marg, Near Adchini Road, New Delhi-110016
+                Guwahati        C/o S.K.M Complex 1st Floor, Room No 7, Paltan Bazar, Guwahati-781 008 (Assam)
+            </pre>
+        </div>
+    </div>
+</body>
+
+</html>

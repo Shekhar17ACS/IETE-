@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Receipt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family:fantasy;
+            padding: 40px;
+            font-size: 16px;
+        }
+        .center {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .meta {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .meta span {
+            font-weight:700;
+        }
+        .content {
+            margin-top: 30px;
+            font-weight: bold;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .table {
+            margin-top: 30px;
+            width: 100%;
+            text-align: left;
+            font-weight: bold;
+        }
+        .table th, .table td {
+            padding: 8px 12px;
+        }
+        .address {
+            margin-top: 40px;
+            white-space: pre-line;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        THE INSTITUTION OF ELECTRONICS AND TELECOMMUNICATION ENGINEERS<br>
+        NEW DELHI
+    </div>
+
+    <div class="meta">
+        <span>RECEIPT No : {{ payment.receipt }}</span>
+        <span>MEM No : {{ payment.user.membership_id }}</span>
+        <span>DATE : {{ payment.created_at|date:"d-m-Y" }}</span>
+    </div>
+
+    <div class="content">
+        RECEIVED WITH THANKS FROM <span class="bold">{{ payment.user.last_name }} {{ payment.user.name }} {{ payment.user.title }}</span><br><br>
+        A SUM OF RS. {{ payment.amount|floatformat:0 }} VIDE DD/IPO No {{ payment.dd_no }} ON ACCOUNT OF :
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>APP</th>
+                <th>ADM/TR</th>
+                <th>LIFE</th>
+                <th>SUBS</th>
+                <th>ADVANCE</th>
+                <th>ARREARS</th>
+                <th>GST</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ app_fee|default:"" }}</td>
+                <td>{{ adm_fee|default:"" }}</td>
+                <td>{{ life_fee|default:"" }}</td>
+                <td>{{ subs_fee|default:"" }}</td>
+                <td>{{ advance_fee|default:"" }}</td>
+                <td>{{ arrear_fee|default:"" }}</td>
+                <td>{{ gst_amount|default:"" }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="address">
+        {{ payment.user.last_name }} {{ payment.user.name }} {{ payment.user.title }}<br>
+        {{ payment.user.address1|default:"Not Provided" }}<br>
+        {{ payment.user.address2|default:"Not Provided" }}<br>
+        {{ payment.user.address3|default:"Not Provided" }}
+    </div>
+
+    <div class="footer">
+        ASSISTANT SECRETARY (FINANCE)
+    </div>
+</body>
+</html>
