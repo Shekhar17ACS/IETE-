@@ -59,7 +59,7 @@ useEffect(() => {
       setCentres(centresData);
       setAllSubCentres(subCentresData);
     } catch (error) {
-      console.error("Error fetching centres or sub-centres:", error);
+     
     }
   };
 

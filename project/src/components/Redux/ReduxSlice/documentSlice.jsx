@@ -1,7 +1,7 @@
 
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createDocument, updateDocument, deleteDocument, getDocuments } from '../../../Services/ApiServices/ApiService'; // Adjust path as needed
+import { createDocument, updateDocument, deleteDocument, getDocuments } from '../../../Services/ApiServices/ApiService'; 
 
 // Async thunk for fetching documents
 export const fetchDocumentsThunk = createAsyncThunk(
@@ -9,9 +9,8 @@ export const fetchDocumentsThunk = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const response = await getDocuments(token);
-      console.log('getDocuments response:', response);
       if (response.status === 'success') {
-        return response.data; // Backend returns array of documents
+        return response.data;
       } else {
         return rejectWithValue(response.message || 'Failed to fetch documents');
       }
@@ -35,9 +34,8 @@ export const createDocumentThunk = createAsyncThunk(
       if (files.passport) formData.append('passport', files.passport);
 
       const response = await createDocument(formData, token);
-      console.log('createDocument response:', response);
       if (response.status === 'success') {
-        return response.data; // Backend returns serialized document
+        return response.data; 
       } else {
         return rejectWithValue(response.message || response.errors || 'Failed to create document');
       }
@@ -54,7 +52,7 @@ export const updateDocumentThunk = createAsyncThunk(
     try {
       const formData = new FormData();
       formData.append('id', id);
-      // Append only provided files for partial update
+    
       if (files.profile_photo) formData.append('profile_photo', files.profile_photo);
       if (files.signature) formData.append('signature', files.signature);
       if (files.aadhar_front) formData.append('aadhar_front', files.aadhar_front);
@@ -62,7 +60,7 @@ export const updateDocumentThunk = createAsyncThunk(
       if (files.passport) formData.append('passport', files.passport);
 
       const response = await updateDocument(id, formData, token);
-      console.log('updateDocument response:', response);
+    
       if (response.status === 'success') {
         return response.data;
       } else {
@@ -80,9 +78,8 @@ export const deleteDocumentThunk = createAsyncThunk(
   async ({ id, token }, { rejectWithValue }) => {
     try {
       const response = await deleteDocument(id, token);
-      console.log('createDocument response:', response);
       if (response.status === 'success') {
-        return id; // Return ID for removal from state
+        return id; 
       } else {
         return rejectWithValue(response.message || 'Failed to delete document');
       }
@@ -95,16 +92,16 @@ export const deleteDocumentThunk = createAsyncThunk(
 const documentSlice = createSlice({
   name: 'documents',
   initialState: {
-    documents: [], // Array of uploaded documents
-    files: {}, // Local files selected in DocumentUpload
-    loading: false, // API call status
-    error: null, // Error message or object
-    uploadStatus: 'idle', // idle | uploading | success | failed
+    documents: [],
+    files: {}, 
+    loading: false, 
+    error: null, 
+    uploadStatus: 'idle', 
   },
   reducers: {
     setFiles(state, action) {
       state.files = { ...state.files, ...action.payload };
-      state.error = null; // Clear errors when files are set
+      state.error = null; 
     },
     clearFiles(state) {
       state.files = {};
@@ -142,7 +139,7 @@ const documentSlice = createSlice({
       })
       .addCase(fetchDocumentsThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.documents = action.payload; // Replace documents with fetched data
+        state.documents = action.payload; 
       })
       .addCase(fetchDocumentsThunk.rejected, (state, action) => {
         state.loading = false;
@@ -163,7 +160,7 @@ const documentSlice = createSlice({
         if (index !== -1) {
           state.documents[index] = action.payload;
         }
-        state.files = {}; // Clear files after successful update
+        state.files = {}; 
       })
       .addCase(updateDocumentThunk.rejected, (state, action) => {
         state.loading = false;

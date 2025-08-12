@@ -77,7 +77,7 @@ const MemberReportExport = () => {
       return;
     }
 
-    console.log("Exporting with fields:", selectedFields, "name:", nameFilter, "start_date:", formatDate(startDate), "end_date:", formatDate(endDate)); // Debugging
+
     const response = await exportMemberReport(
       format,
       selectedFields,
@@ -91,7 +91,7 @@ const MemberReportExport = () => {
     if (response.success) {
       setMessage(response.message);
     } else {
-      setError(response.message || 'Failed to export report. Check console for details.');
+      setError(response.message || 'Failed to export report.');
     }
   };
 

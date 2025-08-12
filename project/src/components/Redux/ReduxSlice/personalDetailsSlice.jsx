@@ -16,15 +16,13 @@ export const updatePersonalDetails = createAsyncThunk(
     }
 
     try {
-      const response = await personalDetails(data, token); // Pass the token to the API service
-      console.log("response1", response);
+      const response = await personalDetails(data, token); 
       if (response.status && response.status === 200) { 
         return response.data; 
       } else {
         return rejectWithValue(response.message || "Update failed");
       }
     } catch (error) {
-      console.error("Error updating personal details:", error);
       if (error.response) {
         return rejectWithValue(error.response.data.message || "Something went wrong");
       } else {
@@ -46,14 +44,14 @@ export const fetchPersonalDetails = createAsyncThunk(
     }
 
     try {
-      const response = await GetPersonalDetails({}, token); // Call GetPersonalDetails with token
+      const response = await GetPersonalDetails({}, token); 
       if (response.status === 200) {
-        return response.data; // Return the fetched data
+        return response.data; 
       } else {
         return rejectWithValue(response.message || "Failed to fetch personal details");
       }
     } catch (error) {
-      // const = "Something went wrong";
+     
       const errorMessage =
         error.response?.data?.message || error.message || "Something went wrong";
       return rejectWithValue(errorMessage);
@@ -101,12 +99,12 @@ const personalDetailsSlice = createSlice({
   reducers: {
     updateFormData: (state, action) => {
       state.formData[action.payload.name] = action.payload.value;
-      // localStorage.setItem("formData", JSON.stringify(state.formData));
+
     },
     resetFormData: (state) => {
-      // state.formData = initialState.formData;
+
       state.formData = defaultFormData;
-      // localStorage.removeItem("formData"); // Clear local storage
+
     },
   },
   extraReducers: (builder) => {
@@ -118,7 +116,7 @@ const personalDetailsSlice = createSlice({
       })
       .addCase(fetchPersonalDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.formData = {...defaultFormData, ...action.payload}; // Merge default form data with fetched data
+        state.formData = {...defaultFormData, ...action.payload}; 
         state.data = action.payload;
         })
         .addCase(fetchPersonalDetails.rejected, (state, action) => {
@@ -136,10 +134,10 @@ const personalDetailsSlice = createSlice({
         toast.success("Personal details updated successfully!"); 
       })
       .addCase(updatePersonalDetails.rejected, (state, action) => {
-        console.log("111", action);
+
         state.loading = false;
         state.error = action.payload; // Store the error message
-        // toast.error(action.payload); // Show error message using toast
+
       });
   },
 });

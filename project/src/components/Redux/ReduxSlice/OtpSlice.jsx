@@ -2,18 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
 import { OtpValidate, resendOtp } from "../../../Services/ApiServices/ApiService";
 import { useNavigate } from "react-router-dom";
-// Async Thunk Action (API Call Example)
-// export const fetchUser = createAsyncThunk("user/fetchUser", async (userId) => {
-//   const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
-//   return response.json();
-// });
+
 
 export const postOtp = createAsyncThunk(
   "otp/postOtp",
   async (data, { rejectWithValue }) => {
     try {
       const response = await OtpValidate(data);
-      console.log("hlo", response);
+
       if (response && response?.application_id) {
         return response;
       } else {
@@ -70,14 +66,14 @@ const otpSlice = createSlice({
         state.loading = true;
       })
       .addCase(postOtp.fulfilled, (state, action) => {
-        console.log("action.payload", action.payload);
+
         state.loading = false;
         state.data = action.payload?.data || action.payload; // ✅ Ensure `data` is properly assigned
         toast.success(action.payload?.message || "postOtp successful!");
         
       })
       .addCase(postOtp.rejected, (state, action) => {
-        console.log("111", action);
+
         state.loading = false;
         state.error = action.error.message;
         toast.error(action.payload.error);

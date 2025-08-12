@@ -75,8 +75,6 @@ const QualificationDetails = () => {
     }
   }
 
-  console.log("qual type",qualsTypeData)
-  console.log("qualsBranch",qualsBranchData)
 
   useEffect(()=>{
     getQualsBranch()
@@ -119,7 +117,7 @@ const QualificationDetails = () => {
   };
 
   const handleQualificationChange = (index, field, value) => {
-    console.log(`handleQualificationChange: Index ${index}, Field ${field}, Value:`, value);
+
     dispatch(updateFormData({ name: `${field}_${index + 1}`, value }));
     if (field === "qualification_type") {
       dispatch(updateFormData({ name: `qualification_branch_${index + 1}`, value: "" }));
@@ -131,7 +129,6 @@ const QualificationDetails = () => {
     const qualificationsToUpdate = [];
     const qualificationsToCreate = [];
 
-    console.log("handleQualificationSubmit: FormData State", formData);
 
     // Check only the Graduation field (index 1) for mandatory fields
     if (
@@ -219,8 +216,6 @@ const QualificationDetails = () => {
       }
     }
 
-    console.log("handleQualificationSubmit: Qualifications to Update:", qualificationsToUpdate);
-    console.log("handleQualificationSubmit: Qualifications to Create:", qualificationsToCreate);
 
     if (qualificationsToUpdate.length === 0 && qualificationsToCreate.length === 0) {
       // toast.error("Please fill at least the Graduation qualification.");
@@ -238,7 +233,7 @@ const QualificationDetails = () => {
       await dispatch(fetchQualifications()).unwrap();
       setQualificationCount(Math.max(qualifications.length, 3));
     } catch (error) {
-      console.error("handleQualificationSubmit: Error saving qualifications", error);
+   
       toast.error(error.message || "Failed to save qualifications");
     }
   };
@@ -769,7 +764,7 @@ const handleSaveProposerDetails = async () => {
         <div className="space-y-6">
           {proposerForms.map((form, index) => {
             const proposer = proposers[index] || {};
-            console.log(`Rendering Proposer ${index + 1}:`, proposer);
+           
             return (
               <form key={index} onSubmit={(e) => handleProposerSubmit(e, index)} className="border p-4 rounded-lg">
                 <h3 className="text-base sm:text-lg font-medium text-gray-700">Proposer {index + 1}</h3>

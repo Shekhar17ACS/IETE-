@@ -6,16 +6,16 @@ import {toast} from "react-toastify"
 export const SignUp = createAsyncThunk("user/SignUp", async (data, { rejectWithValue }) => {
   try {
     const response = await Resister(data);
-    console.log("response", response);
+
     if (response.status === 200) {
       return response;
     } else {
       return rejectWithValue(response.message || "Signup failed");
     }
   } catch (error) {
-    console.error("error", error);
+
     if (error.response) {
-      console.error("error response", error.response);
+
       return rejectWithValue(error.response.data.message || "Something went wrong");
     } else {
       return rejectWithValue(error.message || "Something went wrong");
@@ -58,13 +58,13 @@ const userSlice = createSlice({
         state.loading = true;
       })
       .addCase(SignUp.fulfilled, (state, action) => {
-        console.log("action.payload",action.payload)
+  
         state.loading = false;
         state.data = action.payload?.data || action.payload; // ✅ Ensure `data` is properly assigned
        
       })
       .addCase(SignUp.rejected, (state, action) => {
-         console.log("111",action)
+  
         state.loading = false;
         state.error = action.error.message;
       });

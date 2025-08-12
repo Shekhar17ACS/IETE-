@@ -36,7 +36,7 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         setEligiblePlans([]);
       }
     } catch (error) {
-      console.error("Error fetching eligibility:", error);
+    
       setEligible(false);
       setEligiblePlans([]);
     }
@@ -97,25 +97,7 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         </motion.div>
       )}
 
-      {/* {eligible && eligiblePlans.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="mt-5 p-4 bg-white rounded-lg shadow-md"
-        >
-          <p className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
-            You can choose these plans also, please go back and select:
-          </p>
-          <ul className="list-disc list-inside text-gray-600 text-sm sm:text-base">
-            {eligiblePlans.map((plan, index) => (
-              <li key={index}>
-                {plan.membership_type.replace(/"/g, "")}: {plan.fee_amount} {plan.currency} (GST: {plan.gst_percentage}%)
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-      )} */}
+     
 
     
       <div className="flex flex-col sm:flex-row justify-between mt-8 gap-4">

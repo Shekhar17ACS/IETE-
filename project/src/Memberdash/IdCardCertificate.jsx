@@ -43,7 +43,6 @@ const IdCardCertificate = () => {
           pdf.save(); // Triggers the download
         })
         .catch((error) => {
-          console.error('Error generating PDF:', error);
         });
     }
   };

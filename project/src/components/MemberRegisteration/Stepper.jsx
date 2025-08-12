@@ -27,7 +27,7 @@ const Stepper = ({ step, onStepClick, completedSteps = [], canNavigateAll = fals
   };
 
   const handleClick = (index) => {
-    console.log("Step clicked in Stepper:", index + 1);
+
     if (onStepClick && (canNavigateAll || step >= index + 1)) {
       onStepClick(index + 1);
     }

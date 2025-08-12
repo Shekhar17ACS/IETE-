@@ -9,7 +9,6 @@ export default function MemberLayout() {
   const [isOpen, setIsOpen] = useState(true);
   const [sidebarRole, setSidebarRole] = useState("user");
 
-  // Static user info for header (you can replace with real data later)
   const user = {
     name: "Shekhar",
     avatar: "https://i.pravatar.cc/150?img=7"
@@ -17,16 +16,13 @@ export default function MemberLayout() {
 
   useEffect(() => {
     try {
-      // Read stored roles from sessionStorage
       const storedRoles = JSON.parse(sessionStorage.getItem("role") || "[]");
 
-      // Determine permission level: 'admin', 'limited', or 'user'
       const sidebarAccess = getSidebarPermissions(storedRoles);
 
       // Update sidebar state
       setSidebarRole(sidebarAccess);
     } catch (error) {
-      console.error("Invalid role format in sessionStorage:", error);
       setSidebarRole("user"); // fallback
     }
   }, []);

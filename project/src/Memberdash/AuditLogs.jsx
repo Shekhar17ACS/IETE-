@@ -69,16 +69,16 @@ const AuditLogs = () => {
           start_date: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
           end_date: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
         };
-        console.log('API Params:', params); // Debug
+    
         const response = await getAdminLogs(params);
-        console.log('API Response:', response); // Debug
+    
         if (!response.results || !Array.isArray(response.results)) {
           throw new Error('Invalid response format');
         }
         setLogs(response.results);
         setTotalCount(response.count || 0);
       } catch (err) {
-        console.error('Fetch Error:', err.message);
+       
         setError(err.message);
       } finally {
         setLoading(false);

@@ -46,7 +46,6 @@ const RoleManagement = () => {
       }
 
       const response = await getRoles(token);
-      console.log("getRoles response:", response); // Debug log
       if (response.success === false) {
         setError(response.message || "Failed to fetch roles.");
         setRoles([]);
@@ -84,7 +83,6 @@ const RoleManagement = () => {
     }
 
     const response = await createRole({ name: newRoleName }, token);
-    console.log("createRole response:", response); // Debug log
     if (response.success === false) {
       setError(response.message || "Failed to create role.");
       setSaveStatus(null);
@@ -114,7 +112,6 @@ const RoleManagement = () => {
     }
 
     const response = await updateRole(updateRoleData.id, { name: updateRoleData.name }, token);
-    console.log("updateRole response:", response); // Debug log
     if (response.success === false) {
       setError(response.message || "Failed to update role.");
       setSaveStatus(null);
@@ -142,8 +139,6 @@ const RoleManagement = () => {
   }
 
   const response = await deleteRoles(rolesToDelete, token);
-  console.log("deleteRoles response:", response);
-  console.log("deleteRoles results:", response.results);
 
   if (response.success === false) {
     const successfulDeletions = response.results.filter((r) => r.success).map((r) => r.id);

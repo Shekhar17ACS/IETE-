@@ -14,7 +14,6 @@ const getApiData = async (apiUrl) => {
     });
     return response.data; // Return only relevant data
   } catch (error) {
-    console.error("Error fetching data:", error.message);
     return { success: false, message: error.message };
   }
 };
@@ -22,7 +21,7 @@ const getApiData = async (apiUrl) => {
 
 
 const postData = async (apiUrl, data, config = {}) => {
-  console.log("data", data, apiUrl);
+
   try {
     const response = await api.post(apiUrl, data, {
       withCredentials: "include",
@@ -31,8 +30,7 @@ const postData = async (apiUrl, data, config = {}) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error posting data:", error.message);
-    // return { success: false, message: error.message };
+
       const errRes = error?.response?.data;
 
     return {
@@ -46,7 +44,7 @@ const postData = async (apiUrl, data, config = {}) => {
 
 // Function to update data (PATCH request)
 const patchData = async (apiUrl, data, token) => {
-  console.log("data", data, apiUrl);
+ 
   try {
     const response = await api.patch(apiUrl, data, {
       headers: {
@@ -56,7 +54,7 @@ const patchData = async (apiUrl, data, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating data:", error.message);
+   
     return { success: false, message: error.message };
   }
 }
@@ -69,7 +67,7 @@ const getDataWithId = async (apiUrl, id) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching data by ID:", error.message);
+
     return { success: false, message: error.message };
   }
 };
@@ -82,7 +80,7 @@ const updateDataWithId = async (apiUrl, id, data) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating data by ID:", error.message);
+    
     return { success: false, message: error.message };
   }
 }
@@ -97,7 +95,7 @@ const putData = async (apiUrl, data, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating data:", error.message);
+    
     return {
       success: false,
       message: error.response?.data?.error || error.message,
@@ -111,7 +109,7 @@ const deleteDataWithId = async (apiUrl, id) => {
     const response = await api.delete(`${apiUrl}${id}/`);
     return response.data;
   } catch (error) {
-    console.error("Error deleting data by ID:", error.message);
+   
     return { success: false, message: error.message };
   }
 };
@@ -121,7 +119,7 @@ const deleteConfigData = async (apiUrl, config) => {
     const response = await api.delete(apiUrl, config);
     return response.data;
   } catch (error) {
-    console.error("Error deleting data:", error.message);
+  
     throw error; // Let the caller handle the error
   }
 };
@@ -459,7 +457,7 @@ export const togglePermission = async (data, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error toggling permission:", error.message);
+
     return { success: false, message: error.message };
   }
 };
@@ -475,7 +473,7 @@ export const bulkUpdatePermissions = async (data, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error bulk updating permissions:", error.message);
+   
     return { success: false, message: error.message };
   }
 };
@@ -522,7 +520,7 @@ export const getAdminLogs = async () => {
     const response = await api.get(adminLogsApiUrl);
     return response.data;
   } catch (error) {
-    console.error("Error fetching admin logs:", error.message);
+    
     return { success: false, message: error.message };
   }
 };
@@ -727,7 +725,7 @@ export const exportMemberReport = async (format, fields = [], name = null, start
       message: `Member report exported successfully as ${format}`,
     };
   } catch (error) {
-    console.error("Error exporting member report:", error.message);
+   
     return {
       success: false,
       status: error?.response?.status || 500,
@@ -767,7 +765,7 @@ export const getIdCardAndCertificate = async (type = "", token) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error fetching ID card/certificate:", error.message);
+
     return {
       success: false,
       status: error?.response?.status || 500,

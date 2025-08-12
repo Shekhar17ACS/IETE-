@@ -215,7 +215,7 @@ const DocumentUpload = ({ nextStep, prevStep }) => {
       setProgress({});
       handleNextStep();
     } catch (error) {
-      console.error("Operation failed:", error);
+    
       toast.error("Failed to process documents. Please try again.");
     }
   };

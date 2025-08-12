@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Plus, Trash, Pencil, Search, Mail } from "lucide-react";
+import { Trash, Pencil, Search, Mail } from "lucide-react";
 import {
   getEmployees,
   getEmployee,
@@ -18,7 +17,6 @@ const EmployeeManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
@@ -42,12 +40,11 @@ const EmployeeManagement = () => {
           getRoleList(token),
         ]);
 
-        console.log("getEmployees response:", employeeRes);
-        console.log("getRoleList response:", roleRes);
+
 
         if (employeeRes.success === false) throw new Error(employeeRes.message);
         if (!Array.isArray(employeeRes)) {
-          console.error("getEmployees returned non-array:", employeeRes);
+
           throw new Error("Invalid employee data format");
         }
 
@@ -77,37 +74,6 @@ const EmployeeManagement = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle create employee
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    try {
-      const createData = {
-        name: formData.name,
-        email: formData.email,
-        role: formData.role,
-        address1: formData.address1 || null,
-        // designation: formData.designation || null,
-      };
-      const response = await createEmployee(createData, token);
-      console.log("createEmployee response:", response);
-      if (response.success === false) throw new Error(response.message || "Failed to create employee");
-      setEmployees([...employees, response].filter((emp) => emp && emp.id));
-      setIsCreateModalOpen(false);
-      setFormData({
-        name: "",
-        email: "",
-        role: "",
-        address1: "",
-        // designation: "",
-      });
-      setError("");
-    } catch (err) {
-      const errorMessage = err.message || (err.response?.data?.error || "Failed to create employee");
-      setError(errorMessage);
-    }
-  };
-
-
   // Handle update employee
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -120,7 +86,7 @@ const EmployeeManagement = () => {
         // designation: formData.designation || null,
       };
       const response = await updateEmployee(updateEmployeeId, updateData, token);
-      console.log("updateEmployee response:", response);
+
       if (response.success === false) throw new Error(response.message || "Failed to update employee");
       setEmployees(
         employees
@@ -146,7 +112,6 @@ const EmployeeManagement = () => {
   const handleDelete = async () => {
     try {
       const response = await deleteEmployee(updateEmployeeId, token);
-      console.log("deleteEmployee response:", response);
       if (response.success === false) throw new Error(response.message || "Failed to delete employee");
       setEmployees(employees.filter((emp) => emp.id !== updateEmployeeId));
       setIsDeleteModalOpen(false);
@@ -207,7 +172,7 @@ const EmployeeManagement = () => {
       const formData = new FormData();
       formData.append("file", bulkFile);
       const response = await createBulkEmployees(formData, token);
-      console.log("createBulkEmployees response:", response);
+     
       if (response.success === false) throw new Error(response.message || "Failed to process bulk upload");
 
       const createdEmployees = Array.isArray(response)
@@ -239,7 +204,7 @@ const EmployeeManagement = () => {
   const openUpdateModal = async (id) => {
     try {
       const response = await getEmployee(id, token);
-      console.log("getEmployee response:", response);
+      
       if (response.success === false) throw new Error(response.message || "Failed to fetch employee");
       setFormData({
         name: response.name || "",
@@ -303,12 +268,6 @@ const EmployeeManagement = () => {
             />
           </div>
           <div className="flex space-x-2">
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-            >
-              <Plus className="h-5 w-5 mr-2" /> Add Member
-            </button>
             {selectedEmployees.length > 0 && (
               <button
                 onClick={() => setIsBulkDeleteModalOpen(true)}
@@ -351,7 +310,7 @@ const EmployeeManagement = () => {
                     type="checkbox"
                     checked={selectedEmployees.length === filteredEmployees.length && filteredEmployees.length > 0}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray300 rounded"
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -429,111 +388,6 @@ const EmployeeManagement = () => {
           </table>
         </div>
       </div>
-
-      {/* Create Modal */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Add Member</h2>
-            <form onSubmit={handleCreate}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Role
-                </label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                  required
-                >
-                  <option value="">Select Role</option>
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.name}>
-                      {role.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  name="address1"
-                  value={formData.address1}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Designation
-                </label>
-                <input
-                  type="text"
-                  name="designation"
-                  value={formData.designation}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div> */}
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCreateModalOpen(false);
-                    setFormData({ 
-                        name: "",
-                         email: "",
-                          role: "",
-                           address1: "",
-                            // designation: "" 
-                        });
-                    setError("");
-                  }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Update Modal */}
       {isUpdateModalOpen && (

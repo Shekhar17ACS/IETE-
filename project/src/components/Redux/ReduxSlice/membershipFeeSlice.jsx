@@ -21,13 +21,11 @@ export const fetchMembershipFees = createAsyncThunk(
       const response = await getMembershipFees(data, token);
      
       if (response) {
-        console.log("response2", response);
         return response;
       } else {
         return rejectWithValue(response || "Failed to fetch membership fees");
       }
     } catch (error) {
-      console.error("Error fetching membership fees:", error);
       if (error.response) {
         return rejectWithValue(error.response.data.message || "Something went wrong");
       } else {
@@ -60,7 +58,6 @@ export const saveSelectedMembership = createAsyncThunk(
         return rejectWithValue(response || "Failed to save membership");
       }
     } catch (error) {
-      console.error("Error saving membership:", error);
       if (error.response) {
         return rejectWithValue(error.response.data.message || "Something went wrong");
       } else {
@@ -72,13 +69,13 @@ export const saveSelectedMembership = createAsyncThunk(
 
 // Default form data
 const defaultFormData = {
-  course: "", // Selected membership type (e.g., FELLOW, MEMBER, etc.)
+  course: "", 
 };
 
 const initialState = {
   loading: false,
   error: null,
-  membershipFees: [], // Store fetched membership fees
+  membershipFees: [], 
   formData: defaultFormData,
 };
 
@@ -101,13 +98,10 @@ const membershipFeeSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchMembershipFees.fulfilled, (state, action) => {
-        console.log("111", action.payload);
         state.loading = false;
-        state.membershipFees = action.payload; // Store fetched membership fees
-        // toast.success("Membership fees loaded successfully!");
+        state.membershipFees = action.payload; 
       })
       .addCase(fetchMembershipFees.rejected, (state, action) => {
-        console.log("111", action);
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
@@ -124,7 +118,7 @@ const membershipFeeSlice = createSlice({
       .addCase(saveSelectedMembership.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // toast.error(action.payload);
+
       });
   },
 });

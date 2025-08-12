@@ -17,7 +17,7 @@ export function MembershipForm() {
 
   const {user} = useAuth();
 
-  console.log("user",user)
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

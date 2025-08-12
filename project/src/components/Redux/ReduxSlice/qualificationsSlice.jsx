@@ -92,74 +92,20 @@ export const fetchQualifications = createAsyncThunk(
 
     try {
       const response = await getQualifications(token);
-      console.log("getQualifications Response:", response);
+
       if (response.results) {
         return response.results; // Use paginated results
       } else {
         return rejectWithValue(response.message || "Failed to fetch qualifications");
       }
     } catch (error) {
-      console.error("Error fetching qualifications:", error);
+  
       return rejectWithValue(error.message || "Something went wrong");
     }
   }
 );
 
-// Async thunk for adding qualifications
-// export const addQualification = createAsyncThunk(
-//   "qualifications/addQualification",
-//   async ({ data }, { getState, rejectWithValue }) => {
-//     const state = getState();
-//     let token = state.LoginUser?.token || sessionStorage.getItem("token");
 
-//     if (!token) {
-//       return rejectWithValue("Token is not available. Please log in again.");
-//     }
-
-//     try {
-//       const qualifications = [];
-//       for (let i = 1; i <= 9; i++) {
-//         if (data[`institute_name_${i}`]) {
-//           qualifications.push({
-//             qualification_type: data[`qualification_type_${i}`] || "",
-//             qualification_branch: data[`qualification_branch_${i}`] || "",
-//             institute_name: data[`institute_name_${i}`] || "",
-//             board_university: data[`board_university_${i}`] || "",
-//             year_of_passing: data[`year_of_passing_${i}`] || "",
-//             percentage_cgpa: data[`percentage_cgpa_${i}`] || "",
-//             document: data[`document_${i}`],
-//           });
-//         }
-//       }
-
-//       const formData = new FormData();
-//       qualifications.forEach((qual, index) => {
-//         const i = index + 1; // API expects indices 1 to 9
-//         formData.append(`qualification_type_${i}`, qual.qualification_type);
-//         formData.append(`qualification_branch_${i}`, qual.qualification_branch);
-//         formData.append(`institute_name_${i}`, qual.institute_name);
-//         formData.append(`board_university_${i}`, qual.board_university);
-//         formData.append(`year_of_passing_${i}`, qual.year_of_passing);
-//         formData.append(`percentage_cgpa_${i}`, qual.percentage_cgpa);
-//         if (qual.document instanceof File) {
-//           formData.append(`document_${i}`, qual.document);
-//         }
-//       });
-
-//       const response = await createQualification(formData, token);
-//       console.log("addQualification Response:", response);
-//       if (response.status === "success") {
-//         toast.success("Qualification added successfully!");
-//         return response.data;
-//       } else {
-//         return rejectWithValue(response.message || response.errors || "Failed to add qualification");
-//       }
-//     } catch (error) {
-//       console.error("Error adding qualification:", error);
-//       return rejectWithValue(error.response?.data?.message || "Failed to add qualification");
-//     }
-//   }
-// );
 
 export const addQualification = createAsyncThunk(
   "qualifications/addQualification",
@@ -211,7 +157,7 @@ export const addQualification = createAsyncThunk(
       });
 
       const response = await createQualification(formData, token);
-      console.log("addQualification Response:", response);
+
       if (response.status === "success") {
         toast.success("Qualification added successfully!");
         return response.data; // Expect response.data to be an array of new qualifications
@@ -219,37 +165,12 @@ export const addQualification = createAsyncThunk(
         return rejectWithValue(response.message || response.errors || "Failed to add qualification");
       }
     } catch (error) {
-      console.error("Error adding qualification:", error);
+   
       return rejectWithValue(error.response?.data?.message || "Failed to add qualification");
     }
   }
 );
 
-// Async thunk for editing qualifications
-// export const editQualification = createAsyncThunk(
-//   "qualifications/editQualification",
-//   async ({ id, qualificationData }, { getState, rejectWithValue }) => {
-//     const state = getState();
-//     let token = state.LoginUser?.token || sessionStorage.getItem("token");
-
-//     if (!token) {
-//       return rejectWithValue("Token is not available. Please log in again.");
-//     }
-
-//     try {
-//       const response = await updateQualification(id, qualificationData, token);
-//       if (response.status === "success") {
-//         toast.success("Qualification updated successfully!");
-//         return response.data;
-//       } else {
-//         return rejectWithValue(response.message || "Failed to update qualification");
-//       }
-//     } catch (error) {
-//       console.error("Error updating qualification:", error);
-//       return rejectWithValue(error.message || "Something went wrong");
-//     }
-//   }
-// );
 
 export const editQualification = createAsyncThunk(
   "qualifications/editQualification",
@@ -272,7 +193,7 @@ export const editQualification = createAsyncThunk(
         return rejectWithValue(response.message || "Failed to update qualification");
       }
     } catch (error) {
-      console.error("Error updating qualification:", error);
+  
       return rejectWithValue(error?.response?.data?.message || "Something went wrong");
     }
   }
@@ -299,7 +220,7 @@ export const removeQualification = createAsyncThunk(
         return rejectWithValue(response.message || "Failed to delete qualification");
       }
     } catch (error) {
-      console.error("Error deleting qualification:", error);
+
       return rejectWithValue(error.message || "Something went wrong");
     }
   }
@@ -345,7 +266,7 @@ const qualificationsSlice = createSlice({
       .addCase(fetchQualifications.fulfilled, (state, action) => {
         state.loading = false;
         state.qualifications = action.payload;
-        console.log("Fetched Qualifications:", action.payload);
+   
         // Map fetched qualifications to formData
         const newFormData = { ...defaultFormData, otherQualifications: [] };
         state.otherQualifications = [];
@@ -372,8 +293,7 @@ const qualificationsSlice = createSlice({
           }
         });
         state.formData = newFormData;
-        console.log("Updated formData:", newFormData);
-        console.log("Updated otherQualifications:", state.otherQualifications);
+
       })
       .addCase(fetchQualifications.rejected, (state, action) => {
         state.loading = false;
@@ -383,34 +303,7 @@ const qualificationsSlice = createSlice({
       .addCase(addQualification.pending, (state) => {
         state.loading = true;
       })
-      // .addCase(addQualification.fulfilled, (state, action) => {
-      //   state.loading = false;
-      //   const newQualifications = Array.isArray(action.payload) ? action.payload : [action.payload];
-      //   state.qualifications.push(...newQualifications);
-      //   // Update formData with new qualifications
-      //   newQualifications.forEach((qual, index) => {
-      //     const formIndex = state.qualifications.length - newQualifications.length + index + 1;
-      //     state.formData[`qualification_type_${formIndex}`] = qual.qualification_type?.toString() || "";
-      //     state.formData[`qualification_branch_${formIndex}`] = qual.qualification_branch?.toString() || "";
-      //     state.formData[`institute_name_${formIndex}`] = qual.institute_name || "";
-      //     state.formData[`board_university_${formIndex}`] = qual.board_university || "";
-      //     state.formData[`year_of_passing_${formIndex}`] = qual.year_of_passing?.toString() || "";
-      //     state.formData[`percentage_cgpa_${formIndex}`] = qual.percentage_cgpa?.toString() || "";
-      //     state.formData[`document_${formIndex}`] = qual.document || null;
-      //     // Update otherQualifications if index >= 3
-      //     if (formIndex > 3) {
-      //       state.otherQualifications.push({
-      //         qualification_type: qual.qualification_type?.toString() || "",
-      //         qualification_branch: qual.qualification_branch?.toString() || "",
-      //         institute_name: qual.institute_name || "",
-      //         board_university: qual.board_university || "",
-      //         year_of_passing: qual.year_of_passing?.toString() || "",
-      //         percentage_cgpa: qual.percentage_cgpa?.toString() || "",
-      //         document: qual.document || null,
-      //       });
-      //     }
-      //   });
-      // })
+      
       .addCase(addQualification.fulfilled, (state, action) => {
   state.loading = false;
   const newQualifications = Array.isArray(action.payload) ? action.payload : [action.payload];

@@ -21,26 +21,24 @@ const Payment = ({ prevStep }) => {
   }, []);
 
   const handlePayment = async () => {
-    // Create a payment order on the backend
-    const response = await createPaymentOrder(); // Amount in paise (11800 paise = 118 INR)
+ 
+    const response = await createPaymentOrder(); 
     
     if (response.status && response.status === 200) {
       const options = {
-        key: response.key, // Replace with your Razorpay key
-        amount: response.amount, // Use the amount returned from the backend
+        key: response.key, 
+        amount: response.amount, 
         currency: response.currency,
         name: "Membership Registration",
         description: "Payment for Registration",
-        image: "https://yourlogo.com/logo.png", // Replace with your logo URL
-        order_id: response.order_id, // Use the order ID returned from the backend
+        image: "https://yourlogo.com/logo.png", 
+        order_id: response.order_id, 
         handler: async (paymentResponse) => {
-          console.log("Payment successful!", paymentResponse);
           setPaymentId(paymentResponse.razorpay_payment_id);
           alert("Payment Successful! Payment ID: " + paymentResponse.razorpay_payment_id);
           setIsOpen(true);
           setPaymentStatus(true);
-              // resetForm();
-          // Verify the payment with the backend
+
           const verificationResponse = await verifyPayment(
             response.order_id,
             paymentResponse.razorpay_payment_id,
@@ -49,16 +47,13 @@ const Payment = ({ prevStep }) => {
           );
 
           if (verificationResponse.status && verificationResponse.status === 200) {
-            // Navigate to Thank You page with payment ID
-            // navigate("/thank-you", { state: { paymentId: paymentResponse.razorpay_payment_id } });
+      
           } else {
-            console.error("Payment verification failed:", verificationResponse.message);
-            console.log("Payment verification response:", verificationResponse);
+       
             setPaymentStatus(false);
             setIsOpen(true);
 
-            // Navigate to Payment Failed page
-            // navigate("/payment-failed", { state: { paymentId: paymentResponse.razorpay_payment_id } });
+          
           }
         },
         prefill: {
@@ -74,7 +69,7 @@ const Payment = ({ prevStep }) => {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } else {
-      console.error("Failed to create payment order:", response.message);
+  
       setPaymentStatus(false);
       setIsOpen(true);
     }

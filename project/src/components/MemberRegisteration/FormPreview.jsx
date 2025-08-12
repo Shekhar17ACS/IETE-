@@ -134,7 +134,7 @@ const FormPreview = ({ nextStep, prevStep }) => {
 
         pdf.save("membership-application-form.pdf")
       } catch (error) {
-        console.error("Error generating PDF:", error)
+      
       }
     }
 
@@ -240,9 +240,7 @@ const FormPreview = ({ nextStep, prevStep }) => {
     return <div className="text-center p-4 sm:p-8">Loading application preview...</div>
   }
 
-  // if (error) {
-  //   return <div className="text-center p-4 sm:p-8 text-red-600">Membership application is not yet approved by required number of proposers.</div>
-  // }
+ 
   if (error) {
   return (
     <div className="flex flex-col items-center justify-center  text-center">

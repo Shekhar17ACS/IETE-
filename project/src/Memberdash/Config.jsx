@@ -112,7 +112,7 @@ const Config = ({ token }) => {
       toast.success('Config deleted successfully');
       fetchConfigs();
     } catch (error) {
-      console.log("djfsjdfsfj", error);
+
       toast.error(error?.response?.data?.detail || 'Failed to delete config');
     } finally {
       setIsLoading(false);

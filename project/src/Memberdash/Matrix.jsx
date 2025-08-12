@@ -88,7 +88,6 @@ const Matrix = () => {
 
       // Fetch roles
       const roleResponse = await getRoleList(token);
-      console.log("getRoleList response:", roleResponse);
       if (roleResponse.success === false) {
         setError(roleResponse.message || "Failed to fetch roles.");
         setRoles([]);
@@ -105,7 +104,6 @@ const Matrix = () => {
 
       // Fetch permissions
       const permissionResponse = await getPermissionMatrix(token);
-      console.log("getPermissionMatrix response:", permissionResponse);
       if (permissionResponse.success === false) {
         setError(permissionResponse.message || "Failed to fetch permissions.");
         setPermissions([]);
@@ -223,7 +221,6 @@ const Matrix = () => {
       return { role: role.apiName, permissions: permissionsForRole };
     });
 
-    console.log("bulkUpdatePermissions payloads:", payloads); // Debug log
 
     try {
       for (const payload of payloads) {

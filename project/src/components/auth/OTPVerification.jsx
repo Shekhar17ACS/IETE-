@@ -76,7 +76,7 @@ const OTPVerification = ({
     setIsResending(true);
     dispatch(resendOtpThunk({ email: formDatawithemail?.email }))
       .then((response) => {
-        console.log("Resend OTP Response:", response);
+        
         if (response.type === 'otp/resendOtp/rejected ') {
           setResendAttempts((prev) => prev + 1); // Increment the resend attempts
           setIsResending(true);
@@ -138,12 +138,11 @@ const OTPVerification = ({
   dispatch(UpdateFormData({ name: "otp", value: otpString }));
 };
 
-  console.log("otplength", otplength);
 
   const varifyOtp = () => {
     dispatch(postOtp(formData))
       .then((response) => {
-        console.log("OTP Verification Response:", response);
+     
         if (response.payload && response.payload.message) {
           dispatch(UpdateFormData({ name: "otp", value: "" }));
           navigate("/login");
@@ -163,7 +162,7 @@ const OTPVerification = ({
     );
   }, [formDatawithemail]);
 
-  console.log("3333", formDatawithemail);
+
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.92 },
@@ -210,8 +209,6 @@ const OTPVerification = ({
     },
   };
 
-  console.log("88888", formData);
-  console.log("hiii", isOtpModalOpen);
 
   return (
     <>

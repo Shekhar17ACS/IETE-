@@ -27,8 +27,7 @@ const CourseSelection = () => {
     (state) => state.membershipFee
   );
   const [formData, setFormData] = useState({ course: "", courseId: null });
-  console.log("membershipFees", membershipFees);
-  console.log("reduxFormData", reduxFormData);
+
 
   // Fetch membership fees on component mount
   useEffect(() => {

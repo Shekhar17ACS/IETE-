@@ -49,15 +49,12 @@ api.interceptors.response.use(
 
         const newAccessToken = response.data.access;
 
-        // Store the new access token
         sessionStorage.setItem("token", newAccessToken);
 
-        // Update Authorization header and retry the request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
 
-        // Clear tokens and redirect to login
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("refresh_token");
         window.location.href = "/login";

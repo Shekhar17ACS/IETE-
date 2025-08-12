@@ -25,7 +25,6 @@ export const fetchPaymentHistory = createAsyncThunk(
         previous: response.previous,
       };
     } catch (error) {
-      console.error('Error fetching payment history:', error);
       if (error.response) {
         return rejectWithValue(error.response.data.message || 'Failed to fetch payment history');
       } else {

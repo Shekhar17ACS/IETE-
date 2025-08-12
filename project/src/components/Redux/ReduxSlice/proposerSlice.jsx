@@ -17,17 +17,7 @@ export const fetchProposers = createAsyncThunk(
 );
 
 
-// export const createNewProposer = createAsyncThunk(
-//   'proposers/createProposer',
-//   async ({ data, token }, { rejectWithValue }) => {
-//     try {
-//       const response = await createProposer({ proposers: [data] }, token); 
-//       return response.data[0]; 
-//     } catch (error) {
-//       return rejectWithValue(error.message || 'Failed to create proposer');
-//     }
-//   }
-// );
+
 export const createNewProposer = createAsyncThunk(
   'proposers/createProposer',
   async ({ data, token }, { rejectWithValue }) => {
@@ -92,7 +82,6 @@ const proposerSlice = createSlice({
           next: action.payload?.next || null,
           previous: action.payload?.previous || null,
         };
-        console.log("Fetched proposers:", state.proposers);
       })
       .addCase(fetchProposers.rejected, (state, action) => {
         state.loading = false;
@@ -105,10 +94,7 @@ const proposerSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // .addCase(createNewProposer.fulfilled, (state, action) => {
-      //   state.loading = false;
-      //   state.proposers.push(action.payload);
-      // })
+
       .addCase(createNewProposer.fulfilled, (state, action) => {
   state.loading = false;
   const proposer = action.payload.data?.[0];

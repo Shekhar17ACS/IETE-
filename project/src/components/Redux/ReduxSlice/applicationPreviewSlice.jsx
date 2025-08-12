@@ -1,6 +1,6 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getApplicationPreview } from '../../../Services/ApiServices/ApiService'; // Adjust path to your apiService.js file
+import { getApplicationPreview } from '../../../Services/ApiServices/ApiService'; 
 import { toast } from 'react-hot-toast';
 
 // Async thunk to fetch application preview data
@@ -20,9 +20,9 @@ export const fetchApplicationPreview = createAsyncThunk(
       if (response.success === false) {
         return rejectWithValue(response.message || 'Failed to fetch application preview');
       }
-      return response.data; // Return the data object containing personal_details, qualifications, etc.
+      return response.data; 
     } catch (error) {
-      console.error('Error fetching application preview:', error);
+
       if (error.response) {
         return rejectWithValue(error.response.data.message || 'Failed to fetch application preview');
       } else {
