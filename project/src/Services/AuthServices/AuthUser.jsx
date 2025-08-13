@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
 
-  // Load tokens from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedRefreshToken = localStorage.getItem("refresh_token");
@@ -16,7 +15,6 @@ export const AuthProvider = ({ children }) => {
     if (storedRefreshToken) setRefreshToken(storedRefreshToken);
   }, []);
 
-  // Sync localStorage when tokens change
   useEffect(() => {
     if (token) localStorage.setItem("token", token);
     else localStorage.removeItem("token");
@@ -25,7 +23,6 @@ export const AuthProvider = ({ children }) => {
     else localStorage.removeItem("refresh_token");
   }, [token, refreshToken]);
 
-  // Memoize context value to avoid re-renders
   const value = useMemo(() => ({
     token,
     setToken,

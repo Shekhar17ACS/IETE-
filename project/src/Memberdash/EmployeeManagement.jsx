@@ -8,7 +8,7 @@ import {
   updateEmployee,
   deleteEmployee,
   getRoleList,
-} from "../Services/ApiServices/ApiService"; // Adjust path as needed
+} from "../Services/ApiServices/ApiService";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
@@ -25,7 +25,6 @@ const EmployeeManagement = () => {
     email: "",
     role: "",
     address1: "",
-    // designation: "",
   });
   const [updateEmployeeId, setUpdateEmployeeId] = useState(null);
   const [bulkFile, setBulkFile] = useState(null);
@@ -40,11 +39,8 @@ const EmployeeManagement = () => {
           getRoleList(token),
         ]);
 
-
-
         if (employeeRes.success === false) throw new Error(employeeRes.message);
         if (!Array.isArray(employeeRes)) {
-
           throw new Error("Invalid employee data format");
         }
 
@@ -83,11 +79,15 @@ const EmployeeManagement = () => {
         email: formData.email,
         role: formData.role,
         address1: formData.address1 || null,
-        // designation: formData.designation || null,
       };
-      const response = await updateEmployee(updateEmployeeId, updateData, token);
+      const response = await updateEmployee(
+        updateEmployeeId,
+        updateData,
+        token
+      );
 
-      if (response.success === false) throw new Error(response.message || "Failed to update employee");
+      if (response.success === false)
+        throw new Error(response.message || "Failed to update employee");
       setEmployees(
         employees
           .map((emp) => (emp.id === updateEmployeeId ? response : emp))
@@ -99,11 +99,11 @@ const EmployeeManagement = () => {
         email: "",
         role: "",
         address1: "",
-        // designation: "",
       });
       setError("");
     } catch (err) {
-      const errorMessage = err.message || (err.response?.data?.error || "Failed to update employee");
+      const errorMessage =
+        err.message || err.response?.data?.error || "Failed to update employee";
       setError(errorMessage);
     }
   };
@@ -112,12 +112,14 @@ const EmployeeManagement = () => {
   const handleDelete = async () => {
     try {
       const response = await deleteEmployee(updateEmployeeId, token);
-      if (response.success === false) throw new Error(response.message || "Failed to delete employee");
+      if (response.success === false)
+        throw new Error(response.message || "Failed to delete employee");
       setEmployees(employees.filter((emp) => emp.id !== updateEmployeeId));
       setIsDeleteModalOpen(false);
       setError("");
     } catch (err) {
-      const errorMessage = err.message || (err.response?.data?.error || "Failed to delete employee");
+      const errorMessage =
+        err.message || err.response?.data?.error || "Failed to delete employee";
       setError(errorMessage);
     }
   };
@@ -129,9 +131,17 @@ const EmployeeManagement = () => {
         selectedEmployees.map(async (id) => {
           try {
             const response = await deleteEmployee(id, token);
-            return { id, success: response.success !== false, message: response.message };
+            return {
+              id,
+              success: response.success !== false,
+              message: response.message,
+            };
           } catch (err) {
-            return { id, success: false, message: err.message || "Failed to delete" };
+            return {
+              id,
+              success: false,
+              message: err.message || "Failed to delete",
+            };
           }
         })
       );
@@ -172,17 +182,21 @@ const EmployeeManagement = () => {
       const formData = new FormData();
       formData.append("file", bulkFile);
       const response = await createBulkEmployees(formData, token);
-     
-      if (response.success === false) throw new Error(response.message || "Failed to process bulk upload");
 
-      const createdEmployees = Array.isArray(response)
-        ? response
-        : [];
+      if (response.success === false)
+        throw new Error(response.message || "Failed to process bulk upload");
+
+      const createdEmployees = Array.isArray(response) ? response : [];
 
       if (response.errors && response.errors.length > 0) {
         setError(
           response.errors
-            .map((err) => `Row ${err.index + 1}: ${err.message || JSON.stringify(err.errors)}`)
+            .map(
+              (err) =>
+                `Row ${err.index + 1}: ${
+                  err.message || JSON.stringify(err.errors)
+                }`
+            )
             .join("; ")
         );
       } else {
@@ -190,12 +204,17 @@ const EmployeeManagement = () => {
       }
 
       setEmployees(
-        [...employees, ...createdEmployees].filter((emp) => emp && emp.id && emp.email)
+        [...employees, ...createdEmployees].filter(
+          (emp) => emp && emp.id && emp.email
+        )
       );
       setBulkFile(null);
       document.getElementById("bulk-upload").value = "";
     } catch (err) {
-      const errorMessage = err.message || (err.response?.data?.error || "Failed to process bulk upload");
+      const errorMessage =
+        err.message ||
+        err.response?.data?.error ||
+        "Failed to process bulk upload";
       setError(errorMessage);
     }
   };
@@ -204,19 +223,20 @@ const EmployeeManagement = () => {
   const openUpdateModal = async (id) => {
     try {
       const response = await getEmployee(id, token);
-      
-      if (response.success === false) throw new Error(response.message || "Failed to fetch employee");
+
+      if (response.success === false)
+        throw new Error(response.message || "Failed to fetch employee");
       setFormData({
         name: response.name || "",
         email: response.email || "",
         role: response.role?.name || response.role || "",
         address1: response.address1 || "",
-        // designation: response.designation || "",
       });
       setUpdateEmployeeId(id);
       setIsUpdateModalOpen(true);
     } catch (err) {
-      const errorMessage = err.message || (err.response?.data?.error || "Failed to fetch employee");
+      const errorMessage =
+        err.message || err.response?.data?.error || "Failed to fetch employee";
       setError(errorMessage);
     }
   };
@@ -224,15 +244,16 @@ const EmployeeManagement = () => {
   // Handle checkbox selection
   const handleSelect = (id) => {
     setSelectedEmployees((prev) =>
-      prev.includes(id)
-        ? prev.filter((empId) => empId !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((empId) => empId !== id) : [...prev, id]
     );
   };
 
   // Select all employees
   const handleSelectAll = () => {
-    if (selectedEmployees.length === filteredEmployees.length && filteredEmployees.length > 0) {
+    if (
+      selectedEmployees.length === filteredEmployees.length &&
+      filteredEmployees.length > 0
+    ) {
       setSelectedEmployees([]);
     } else {
       setSelectedEmployees(filteredEmployees.map((emp) => emp.id));
@@ -248,12 +269,19 @@ const EmployeeManagement = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
-        
-{(error || successMessage) && (
-  <div className={`border-l-4 p-4 mb-6 rounded-r-lg ${error ? 'bg-red-50 border-red-400' : 'bg-green-50 border-green-400'}`}>
-    <p className={error ? 'text-red-700' : 'text-green-700'}>{error || successMessage}</p>
-  </div>
-)}
+        {(error || successMessage) && (
+          <div
+            className={`border-l-4 p-4 mb-6 rounded-r-lg ${
+              error
+                ? "bg-red-50 border-red-400"
+                : "bg-green-50 border-green-400"
+            }`}
+          >
+            <p className={error ? "text-red-700" : "text-green-700"}>
+              {error || successMessage}
+            </p>
+          </div>
+        )}
 
         {/* Search and Actions */}
         <div className="flex justify-between items-center mb-4">
@@ -308,7 +336,10 @@ const EmployeeManagement = () => {
                 <th className="px-6 py-3">
                   <input
                     type="checkbox"
-                    checked={selectedEmployees.length === filteredEmployees.length && filteredEmployees.length > 0}
+                    checked={
+                      selectedEmployees.length === filteredEmployees.length &&
+                      filteredEmployees.length > 0
+                    }
                     onChange={handleSelectAll}
                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray300 rounded"
                   />
@@ -328,9 +359,6 @@ const EmployeeManagement = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Address
                 </th>
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Designation
-                </th> */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -362,9 +390,6 @@ const EmployeeManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {employee.address1 || "-"}
                   </td>
-                  {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {employee.designation || "-"}
-                  </td> */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => openUpdateModal(employee.id)}
@@ -452,19 +477,18 @@ const EmployeeManagement = () => {
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
-              
+
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => {
                     setIsUpdateModalOpen(false);
-                    setFormData({ 
-                        name: "",
-                         email: "",
-                          role: "",
-                           address1: "",
-                        
-                         });
+                    setFormData({
+                      name: "",
+                      email: "",
+                      role: "",
+                      address1: "",
+                    });
                     setError("");
                   }}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
@@ -518,7 +542,8 @@ const EmployeeManagement = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Confirm Bulk Deletion</h2>
             <p className="text-gray-700 mb-4">
-              Are you sure you want to delete {selectedEmployees.length} Member(s)?
+              Are you sure you want to delete {selectedEmployees.length}{" "}
+              Member(s)?
             </p>
             <div className="flex justify-end space-x-2">
               <button

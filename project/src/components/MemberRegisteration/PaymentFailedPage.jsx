@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -41,18 +39,17 @@ const PaymentFailedPage = ({ transactionNumber }) => {
             className="mb-6"
           >
             <svg
-            className="w-20 h-20 text-red-500 mx-auto animate-pulse"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            
-              d="M12 8v4m0 4h.01M21 12a9 perspectiveTransform((x) => {
+              className="w-20 h-20 text-red-500 mx-auto animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 perspectiveTransform((x) => {
                 const scale = 1.2;
                 return {
                   translateX: x / scale - x,
@@ -60,9 +57,9 @@ const PaymentFailedPage = ({ transactionNumber }) => {
                 };
               }) rotate(-45deg) scale(0.7);
             }"
-            className="w-12 h-12 text-red-500 animate-pulse"
-            />
-          </svg>
+                className="w-12 h-12 text-red-500 animate-pulse"
+              />
+            </svg>
           </motion.div>
 
           {/* Heading */}
@@ -77,13 +74,15 @@ const PaymentFailedPage = ({ transactionNumber }) => {
 
           {/* Message */}
           <p className="text-gray-600 text-lg font-medium mt-4">
-            We're sorry, but your payment could not be processed. Please try again or contact support.
+            We're sorry, but your payment could not be processed. Please try
+            again or contact support.
           </p>
 
           {/* Transaction Details */}
           <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg mt-6 border border-white/20">
             <p className="text-sm text-gray-800">
-              Transaction ID: <span className="font-bold">{transactionNumber}</span>
+              Transaction ID:{" "}
+              <span className="font-bold">{transactionNumber}</span>
             </p>
             <p className="text-sm text-gray-800">Date: {attemptDate}</p>
             <motion.button

@@ -1,7 +1,10 @@
 // ForgotPassword.jsx
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { forgotPassword, resetPassword } from "../../../Services/ApiServices/ApiService";
-import { toast } from 'react-hot-toast';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  forgotPassword,
+  resetPassword,
+} from "../../../Services/ApiServices/ApiService";
+import { toast } from "react-hot-toast";
 
 const initialState = {
   email: "",
@@ -12,12 +15,14 @@ const initialState = {
 };
 
 export const forgotPasswordAsync = createAsyncThunk(
-  'forgotPassword/forgotPasswordAsync',
+  "forgotPassword/forgotPasswordAsync",
   async (email, { rejectWithValue }) => {
     try {
       const response = await forgotPassword({ email });
       if (!response.message) {
-        throw new Error(response.error || 'Failed to send password reset email');
+        throw new Error(
+          response.error || "Failed to send password reset email"
+        );
       }
       return response;
     } catch (error) {
@@ -27,12 +32,20 @@ export const forgotPasswordAsync = createAsyncThunk(
 );
 
 export const resetPasswordAsync = createAsyncThunk(
-  'forgotPassword/resetPasswordAsync',
-  async ({ new_password, confirm_password, uidb64, token }, { rejectWithValue }) => {
+  "forgotPassword/resetPasswordAsync",
+  async (
+    { new_password, confirm_password, uidb64, token },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await resetPassword({ new_password, confirm_password, uidb64, token });
+      const response = await resetPassword({
+        new_password,
+        confirm_password,
+        uidb64,
+        token,
+      });
       if (!response.message) {
-        throw new Error(response.error || 'Failed to reset password');
+        throw new Error(response.error || "Failed to reset password");
       }
       return response;
     } catch (error) {
@@ -42,7 +55,7 @@ export const resetPasswordAsync = createAsyncThunk(
 );
 
 const forgotPasswordSlice = createSlice({
-  name: 'forgotPassword',
+  name: "forgotPassword",
   initialState,
   reducers: {
     setEmail(state, action) {
@@ -93,11 +106,7 @@ const forgotPasswordSlice = createSlice({
   },
 });
 
-export const {
-  setEmail,
-  setNewPassword,
-  setConfirmPassword,
-  clearError,
-} = forgotPasswordSlice.actions;
+export const { setEmail, setNewPassword, setConfirmPassword, clearError } =
+  forgotPasswordSlice.actions;
 
 export default forgotPasswordSlice.reducer;

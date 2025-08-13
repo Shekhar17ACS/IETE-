@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -10,7 +8,13 @@ import {
   fetchPersonalDetails,
 } from "../Redux/ReduxSlice/personalDetailsSlice";
 import { toast } from "react-hot-toast";
-import { sendSMSOtp, verifySMSOtp, getCentres, getSubCentresByCentre, getSubCentres } from "../../Services/ApiServices/ApiService";
+import {
+  sendSMSOtp,
+  verifySMSOtp,
+  getCentres,
+  getSubCentresByCentre,
+  getSubCentres,
+} from "../../Services/ApiServices/ApiService";
 
 const PersonalDetails = () => {
   const { formData, loading } = useSelector((state) => state.personalDetails);
@@ -22,7 +26,9 @@ const PersonalDetails = () => {
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const [isMobileVerified, setIsMobileVerified] = useState(formData.mobile_verified || false);
+  const [isMobileVerified, setIsMobileVerified] = useState(
+    formData.mobile_verified || false
+  );
   const [otpLoading, setOtpLoading] = useState(false);
   const dropdownRef = useRef(null);
   const stateDropdownRef = useRef(null);
@@ -31,14 +37,23 @@ const PersonalDetails = () => {
   const [allSubCentres, setAllSubCentres] = useState([]);
   const [filteredSubCentres, setFilteredSubCentres] = useState([]);
 
-
-
   const defaultTitles = [
-    "Mr.", "Mrs.", "Miss", "Ms.", "Dr.", "Prof.", "Hon.",
-    "Engr.", "Capt.", "Col.", "Gen.", "Adv."
+    "Mr.",
+    "Mrs.",
+    "Miss",
+    "Ms.",
+    "Dr.",
+    "Prof.",
+    "Hon.",
+    "Engr.",
+    "Capt.",
+    "Col.",
+    "Gen.",
+    "Adv.",
   ];
 
-  const isCustomTitle = formData.title && !defaultTitles.includes(formData.title);
+  const isCustomTitle =
+    formData.title && !defaultTitles.includes(formData.title);
 
   useEffect(() => {
     dispatch(fetchPersonalDetails());
@@ -48,33 +63,30 @@ const PersonalDetails = () => {
     setIsMobileVerified(formData.mobile_verified || false);
   }, [formData.mobile_verified]);
 
-useEffect(() => {
-  const fetchData = async () => {
-    const token = sessionStorage.getItem("token");
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = sessionStorage.getItem("token");
 
-    try {
-      const centresData = await getCentres(token);
-      const subCentresData = await getSubCentres(token);
+      try {
+        const centresData = await getCentres(token);
+        const subCentresData = await getSubCentres(token);
 
-      setCentres(centresData);
-      setAllSubCentres(subCentresData);
-    } catch (error) {
-     
+        setCentres(centresData);
+        setAllSubCentres(subCentresData);
+      } catch (error) {}
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (formData?.centre && allSubCentres?.length > 0) {
+      const filtered = allSubCentres.filter(
+        (sub) => sub.centre?.id === parseInt(formData.centre)
+      );
+      setFilteredSubCentres(filtered);
     }
-  };
-
-  fetchData();
-}, []);
-
-useEffect(() => {
-  if (formData?.centre && allSubCentres?.length > 0) {
-    const filtered = allSubCentres.filter(
-      (sub) => sub.centre?.id === parseInt(formData.centre)
-    );
-    setFilteredSubCentres(filtered);
-  }
-}, [formData.centre, allSubCentres]);
-
+  }, [formData.centre, allSubCentres]);
 
   useEffect(() => {
     if (isIndian && (!formData.country || formData.country !== "INDIA")) {
@@ -87,7 +99,10 @@ useEffect(() => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
-      if (stateDropdownRef.current && !stateDropdownRef.current.contains(event.target)) {
+      if (
+        stateDropdownRef.current &&
+        !stateDropdownRef.current.contains(event.target)
+      ) {
         setIsStateDropdownOpen(false);
       }
     };
@@ -111,14 +126,14 @@ useEffect(() => {
       setOtp("");
       dispatch(updateFormData({ name: "mobile_verified", value: false }));
     }
-      // Reset sub_centre when centre changes
-if (name === "centre") {
-  const filtered = allSubCentres.filter(
-    (sub) => sub.centre?.id === parseInt(value)
-  );
-  setFilteredSubCentres(filtered);
-  dispatch(updateFormData({ name: "sub_centre", value: "" }));
-}
+    // Reset sub_centre when centre changes
+    if (name === "centre") {
+      const filtered = allSubCentres.filter(
+        (sub) => sub.centre?.id === parseInt(value)
+      );
+      setFilteredSubCentres(filtered);
+      dispatch(updateFormData({ name: "sub_centre", value: "" }));
+    }
   };
 
   const handleCountrySelect = (country) => {
@@ -202,7 +217,10 @@ if (name === "centre") {
 
     let age = today.getFullYear() - dob.getFullYear();
     const monthDifference = today.getMonth() - dob.getMonth();
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < dob.getDate())) {
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < dob.getDate())
+    ) {
       age--;
     }
 
@@ -249,48 +267,248 @@ if (name === "centre") {
       if (result.meta.requestStatus === "fulfilled") {
         handleNextStep();
       } else {
-        toast.error(result.payload || "Failed to save personal details. Please try again.");
+        toast.error(
+          result.payload || "Failed to save personal details. Please try again."
+        );
       }
     });
   };
 
   const countries = [
-    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
-    "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
-    "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana",
-    "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada",
-    "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Brazzaville)",
-    "Congo (Kinshasa)", "Cook Islands", "Costa Rica", "Côte d'Ivoire", "Croatia", "Cuba", "Cyprus",
-    "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt",
-    "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France",
-    "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea",
-    "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran",
-    "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya",
-    "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia",
-    "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-    "North Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
-    "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
-    "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal",
-    "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan",
-    "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland",
-    "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia",
-    "Saint Vincentiothe Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia",
-    "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia",
-    "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan",
-    "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
-    "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda",
-    "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
-    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "Andorra",
+    "Angola",
+    "Antigua and Barbuda",
+    "Argentina",
+    "Armenia",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas",
+    "Bahrain",
+    "Bangladesh",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Belize",
+    "Benin",
+    "Bhutan",
+    "Bolivia",
+    "Bosnia and Herzegovina",
+    "Botswana",
+    "Brazil",
+    "Brunei",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Cambodia",
+    "Cameroon",
+    "Canada",
+    "Central African Republic",
+    "Chad",
+    "Chile",
+    "China",
+    "Colombia",
+    "Comoros",
+    "Congo (Brazzaville)",
+    "Congo (Kinshasa)",
+    "Cook Islands",
+    "Costa Rica",
+    "Côte d'Ivoire",
+    "Croatia",
+    "Cuba",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "Djibouti",
+    "Dominica",
+    "Dominican Republic",
+    "Ecuador",
+    "Egypt",
+    "El Salvador",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Estonia",
+    "Ethiopia",
+    "Fiji",
+    "Finland",
+    "France",
+    "Gabon",
+    "Gambia",
+    "Georgia",
+    "Germany",
+    "Ghana",
+    "Greece",
+    "Grenada",
+    "Guatemala",
+    "Guinea",
+    "Guinea-Bissau",
+    "Guyana",
+    "Haiti",
+    "Honduras",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran",
+    "Iraq",
+    "Ireland",
+    "Israel",
+    "Italy",
+    "Jamaica",
+    "Japan",
+    "Jordan",
+    "Kazakhstan",
+    "Kenya",
+    "Kiribati",
+    "North Korea",
+    "South Korea",
+    "Kosovo",
+    "Kuwait",
+    "Kyrgyzstan",
+    "Laos",
+    "Latvia",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "North Macedonia",
+    "Madagascar",
+    "Malawi",
+    "Malaysia",
+    "Maldives",
+    "Mali",
+    "Malta",
+    "Marshall Islands",
+    "Mauritania",
+    "Mauritius",
+    "Mexico",
+    "Micronesia",
+    "Moldova",
+    "Monaco",
+    "Mongolia",
+    "Montenegro",
+    "Morocco",
+    "Mozambique",
+    "Myanmar",
+    "Namibia",
+    "Nauru",
+    "Nepal",
+    "Netherlands",
+    "New Zealand",
+    "Nicaragua",
+    "Niger",
+    "Nigeria",
+    "Norway",
+    "Oman",
+    "Pakistan",
+    "Palau",
+    "Palestine",
+    "Panama",
+    "Papua New Guinea",
+    "Paraguay",
+    "Peru",
+    "Philippines",
+    "Poland",
+    "Portugal",
+    "Qatar",
+    "Romania",
+    "Russia",
+    "Rwanda",
+    "Saint Kitts and Nevis",
+    "Saint Lucia",
+    "Saint Vincentiothe Grenadines",
+    "Samoa",
+    "San Marino",
+    "Sao Tome and Principe",
+    "Saudi Arabia",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Slovakia",
+    "Slovenia",
+    "Solomon Islands",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Spain",
+    "Sri Lanka",
+    "Sudan",
+    "Suriname",
+    "Sweden",
+    "Switzerland",
+    "Syria",
+    "Taiwan",
+    "Tajikistan",
+    "Tanzania",
+    "Thailand",
+    "Togo",
+    "Tonga",
+    "Trinidad and Tobago",
+    "Tunisia",
+    "Turkey",
+    "Turkmenistan",
+    "Tuvalu",
+    "Uganda",
+    "Ukraine",
+    "United Arab Emirates",
+    "United Kingdom",
+    "United States",
+    "Uruguay",
+    "Uzbekistan",
+    "Vanuatu",
+    "Vatican City",
+    "Venezuela",
+    "Vietnam",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe",
   ];
 
   const IndianState = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
-    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
-    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
-    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
-    "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh",
-    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Lakshadweep", "Puducherry",
-    "Jammu and Kashmir", "Ladakh"
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Lakshadweep",
+    "Puducherry",
+    "Jammu and Kashmir",
+    "Ladakh",
   ];
 
   const inputVariants = {
@@ -1042,71 +1260,70 @@ if (name === "centre") {
             </div>
           </motion.div>
         ))}
-<div className="relative col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-  {/* Centre Column */}
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: 0.2, duration: 0.4 }}
-    className="relative"
-  >
-    <label
-      className="text-xs sm:text-sm font-medium text-gray-700 mb-1 ml-2"
-      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
-    >
-      Centre <span className="text-red-600">*</span>
-    </label>
-    <select
-      name="centre"
-      value={formData.centre}
-      onChange={handleChange}
-      className="w-full px-3 sm:px-4 py-2 border border-indigo-200 rounded-sm bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-indigo-200 text-sm transition duration-150 ease-in-out"
-      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
-    >
-      <option value="">Select Centre</option>
-      {centres?.map((centre) => (
-        <option key={centre.id} value={centre.id}>
-          {centre.name}
-        </option>
-      ))}
-    </select>
-  </motion.div>
+        <div className="relative col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Centre Column */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            className="relative"
+          >
+            <label
+              className="text-xs sm:text-sm font-medium text-gray-700 mb-1 ml-2"
+              style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
+            >
+              Centre <span className="text-red-600">*</span>
+            </label>
+            <select
+              name="centre"
+              value={formData.centre}
+              onChange={handleChange}
+              className="w-full px-3 sm:px-4 py-2 border border-indigo-200 rounded-sm bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-indigo-200 text-sm transition duration-150 ease-in-out"
+              style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
+            >
+              <option value="">Select Centre</option>
+              {centres?.map((centre) => (
+                <option key={centre.id} value={centre.id}>
+                  {centre.name}
+                </option>
+              ))}
+            </select>
+          </motion.div>
 
-  {/* Sub-Centre Column */}
-  <motion.div
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ delay: 0.3, duration: 0.4 }}
-    className="relative"
-  >
-    <label
-      className="text-xs sm:text-sm font-medium text-gray-700 mb-1 ml-2"
-      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
-    >
-      Sub-Centre <span className="text-red-600">*</span>
-    </label>
-    <select
-      name="sub_centre"
-      disabled={filteredSubCentres.length === 0}
-      value={formData.sub_centre}
-      onChange={handleChange}
-      className="w-full px-3 sm:px-4 py-2 border border-indigo-200 rounded-sm bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-indigo-200 text-sm transition duration-150 ease-in-out"
-      style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
-    >
-      <option value="">
-        {filteredSubCentres.length > 0
-          ? "Select Sub-Centre"
-          : "No Sub-Centre"}
-      </option>
-      {filteredSubCentres.map((sub) => (
-        <option key={sub.id} value={sub.id}>
-          {sub.name}
-        </option>
-      ))}
-    </select>
-  </motion.div>
-</div>
-
+          {/* Sub-Centre Column */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="relative"
+          >
+            <label
+              className="text-xs sm:text-sm font-medium text-gray-700 mb-1 ml-2"
+              style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
+            >
+              Sub-Centre <span className="text-red-600">*</span>
+            </label>
+            <select
+              name="sub_centre"
+              disabled={filteredSubCentres.length === 0}
+              value={formData.sub_centre}
+              onChange={handleChange}
+              className="w-full px-3 sm:px-4 py-2 border border-indigo-200 rounded-sm bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-indigo-200 text-sm transition duration-150 ease-in-out"
+              style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "300" }}
+            >
+              <option value="">
+                {filteredSubCentres.length > 0
+                  ? "Select Sub-Centre"
+                  : "No Sub-Centre"}
+              </option>
+              {filteredSubCentres.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+          </motion.div>
+        </div>
 
         <div className="w-full bg-gray-100 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
           <motion.button

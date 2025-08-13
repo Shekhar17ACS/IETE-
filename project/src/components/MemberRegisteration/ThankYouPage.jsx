@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { motion } from "framer-motion";
@@ -33,7 +30,7 @@ const ThankYouPage = ({ transactionNumber }) => {
   };
 
   return (
-    <div >
+    <div>
       {/* Semi-transparent overlay */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -102,7 +99,8 @@ const ThankYouPage = ({ transactionNumber }) => {
           {/* Transaction details */}
           <div className="bg-white/30 backdrop-blur-sm p-4 rounded-lg mt-6 border border-white/20">
             <p className="text-sm text-gray-800">
-              Transaction ID: <span className="font-bold">{transactionNumber}</span>
+              Transaction ID:{" "}
+              <span className="font-bold">{transactionNumber}</span>
             </p>
             <p className="text-sm text-gray-800">Date & Time: {purchaseDate}</p>
             <p className="text-sm text-gray-800">

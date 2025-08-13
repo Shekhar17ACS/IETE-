@@ -1,16 +1,16 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getPaymentHistory } from "../../../Services/ApiServices/ApiService";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 
 export const fetchPaymentHistory = createAsyncThunk(
-  'payment/fetchPaymentHistory',
+  "payment/fetchPaymentHistory",
   async ({ token, page }, { rejectWithValue }) => {
     if (!token) {
-      token = sessionStorage.getItem('token');
+      token = sessionStorage.getItem("token");
     }
 
     if (!token) {
-      return rejectWithValue('Please log in again.');
+      return rejectWithValue("Please log in again.");
     }
 
     try {
@@ -18,7 +18,7 @@ export const fetchPaymentHistory = createAsyncThunk(
       return {
         results: response.results.map((payment) => ({
           ...payment,
-          membership_type: payment.membership_type.replace(/"/g, ''),
+          membership_type: payment.membership_type.replace(/"/g, ""),
         })),
         count: response.count,
         next: response.next,
@@ -26,16 +26,18 @@ export const fetchPaymentHistory = createAsyncThunk(
       };
     } catch (error) {
       if (error.response) {
-        return rejectWithValue(error.response.data.message || 'Failed to fetch payment history');
+        return rejectWithValue(
+          error.response.data.message || "Failed to fetch payment history"
+        );
       } else {
-        return rejectWithValue(error.message || 'Something went wrong');
+        return rejectWithValue(error.message || "Something went wrong");
       }
     }
   }
 );
 
 const paymentSlice = createSlice({
-  name: 'payment',
+  name: "payment",
   initialState: {
     payments: [],
     count: 0,

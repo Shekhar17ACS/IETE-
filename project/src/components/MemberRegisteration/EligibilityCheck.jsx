@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import { useSelector } from "react-redux"; // Added for Redux state access
 import { motion } from "framer-motion";
@@ -8,7 +6,7 @@ import { getEligibility } from "../../Services/ApiServices/ApiService"; // Corre
 import { useOutletContext } from "react-router-dom";
 
 const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
-  const {  handleNextStep, handlePrevStep, resetForm } = useOutletContext();
+  const { handleNextStep, handlePrevStep, resetForm } = useOutletContext();
   const [eligible, setEligible] = useState(null);
   const [eligiblePlans, setEligiblePlans] = useState([]); // New state for plans
 
@@ -36,7 +34,6 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         setEligiblePlans([]);
       }
     } catch (error) {
-    
       setEligible(false);
       setEligiblePlans([]);
     }
@@ -50,7 +47,6 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
       transition={{ duration: 0.5 }}
       className="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8 bg-gray-100 rounded-3xl"
     >
-      
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -60,7 +56,6 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         {/* Eligibility Check */}
       </motion.h2>
 
-      
       <p className="text-base sm:text-lg text-gray-600 text-center mb-6">
         Check if you qualify for this course based on your qualifications.
       </p>
@@ -76,14 +71,15 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         </motion.button>
       </div>
 
-    
       {eligible !== null && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className={`mt-5 flex items-center justify-center gap-3 p-4 text-sm sm:text-base font-semibold rounded-lg shadow-md ${
-            eligible ? "bg-green-500 text-white shadow-green-400/40" : "bg-red-500 text-white shadow-red-400/40"
+            eligible
+              ? "bg-green-500 text-white shadow-green-400/40"
+              : "bg-red-500 text-white shadow-red-400/40"
           }`}
         >
           {eligible ? (
@@ -97,9 +93,6 @@ const EligibilityCheck = ({ nextStep, prevStep, formData }) => {
         </motion.div>
       )}
 
-     
-
-    
       <div className="flex flex-col sm:flex-row justify-between mt-8 gap-4">
         <motion.button
           whileHover={{ scale: 1.05 }}

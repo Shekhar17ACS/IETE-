@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getMembershipFees, saveMembershipFee } from "../../../Services/ApiServices/ApiService"; // Import API services
+import {
+  getMembershipFees,
+  saveMembershipFee,
+} from "../../../Services/ApiServices/ApiService"; // Import API services
 import { toast } from "react-hot-toast";
 
 // Async Thunk for fetching membership fees
@@ -19,7 +22,7 @@ export const fetchMembershipFees = createAsyncThunk(
 
     try {
       const response = await getMembershipFees(data, token);
-     
+
       if (response) {
         return response;
       } else {
@@ -27,7 +30,9 @@ export const fetchMembershipFees = createAsyncThunk(
       }
     } catch (error) {
       if (error.response) {
-        return rejectWithValue(error.response.data.message || "Something went wrong");
+        return rejectWithValue(
+          error.response.data.message || "Something went wrong"
+        );
       } else {
         return rejectWithValue(error.message || "Something went wrong");
       }
@@ -59,7 +64,9 @@ export const saveSelectedMembership = createAsyncThunk(
       }
     } catch (error) {
       if (error.response) {
-        return rejectWithValue(error.response.data.message || "Something went wrong");
+        return rejectWithValue(
+          error.response.data.message || "Something went wrong"
+        );
       } else {
         return rejectWithValue(error.message || "Something went wrong");
       }
@@ -69,13 +76,13 @@ export const saveSelectedMembership = createAsyncThunk(
 
 // Default form data
 const defaultFormData = {
-  course: "", 
+  course: "",
 };
 
 const initialState = {
   loading: false,
   error: null,
-  membershipFees: [], 
+  membershipFees: [],
   formData: defaultFormData,
 };
 
@@ -99,7 +106,7 @@ const membershipFeeSlice = createSlice({
       })
       .addCase(fetchMembershipFees.fulfilled, (state, action) => {
         state.loading = false;
-        state.membershipFees = action.payload; 
+        state.membershipFees = action.payload;
       })
       .addCase(fetchMembershipFees.rejected, (state, action) => {
         state.loading = false;
@@ -118,7 +125,6 @@ const membershipFeeSlice = createSlice({
       .addCase(saveSelectedMembership.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-
       });
   },
 });

@@ -9,7 +9,7 @@ export default function ActionLoader({ isLoading, actionType, message }) {
 
   let iconComponent
   let iconColorClass
-  let iconKey // Key for AnimatePresence to trigger re-render animation
+  let iconKey 
 
   switch (actionType) {
     case "approve":
@@ -57,7 +57,7 @@ export default function ActionLoader({ isLoading, actionType, message }) {
         </AnimatePresence>
         <AnimatePresence mode="wait">
           <motion.p
-            key={message} // Key for AnimatePresence to trigger re-render animation for text
+            key={message} 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

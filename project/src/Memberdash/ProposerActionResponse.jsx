@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { actOnProposer } from "../Services/ApiServices/ApiService"; // adjust path if needed
+import { actOnProposer } from "../Services/ApiServices/ApiService"; 
 import {
   CheckCircle,
   XCircle,

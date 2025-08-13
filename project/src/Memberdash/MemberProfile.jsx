@@ -1,157 +1,161 @@
+"use client";
 
-
-
-
-
-
-
-"use client"
-
-import { useState, useEffect } from "react"
-import { User, Camera, Bell, Shield, CreditCard } from "lucide-react"
-import { changePassword, updatePersonalDetails, GetPersonalDetailsProfile } from "../Services/ApiServices/ApiService"
+import { useState, useEffect } from "react";
+import { User, Camera, Bell, Shield, CreditCard } from "lucide-react";
+import {
+  changePassword,
+  updatePersonalDetails,
+  GetPersonalDetailsProfile,
+} from "../Services/ApiServices/ApiService";
 
 const dummyUser = {
   name: "Shekhar",
   email: "root@gmail.com",
-  designation: "Engineering", // Updated from department
+  designation: "Engineering",
   avatar: "https://i.pravatar.cc/150?img=7",
-}
+};
 
 export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
-  const [activeTab, setActiveTab] = useState("general")
-  const [selectedImage, setSelectedImage] = useState(null)
-  const [avatarFile, setAvatarFile] = useState(null) // Store file for PATCH request
+  const [activeTab, setActiveTab] = useState("general");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
   // State for password fields and feedback
   const [passwordData, setPasswordData] = useState({
     current_password: "",
     new_password: "",
     confirm_password: "",
-  })
-  const [message, setPasswordMessage] = useState("")
-  const [error, setPasswordError] = useState("")
+  });
+  const [message, setPasswordMessage] = useState("");
+  const [error, setPasswordError] = useState("");
   // State for personal details
-  const [name, setName] = useState(user.name)
-  const [email, setEmail ] = useState(user.email)
-  const [designation, setDesignation] = useState(user.designation)
-  const [personalMessage, setPersonalMessage] = useState("")
-  const [personalError, setPersonalError] = useState("")
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [designation, setDesignation] = useState(user.designation);
+  const [personalMessage, setPersonalMessage] = useState("");
+  const [personalError, setPersonalError] = useState("");
 
   const tabs = [
     { id: "general", label: "General", icon: User },
-    // { id: "notifications", label: "Notifications", icon: Bell },
     { id: "security", label: "Security", icon: Shield },
-    // { id: "billing", label: "Billing", icon: CreditCard },
-  ]
+  ];
 
   // Fetch personal details on mount
   useEffect(() => {
     const fetchPersonalDetails = async () => {
       try {
-        const token = sessionStorage.getItem("token")
+        const token = sessionStorage.getItem("token");
         if (!token) {
-          setPersonalError("You must be logged in to view your profile.")
-          return
+          setPersonalError("You must be logged in to view your profile.");
+          return;
         }
 
-        const response = await GetPersonalDetailsProfile(token)
-        const { name, email, designation, avatar } = response.data
-        setName(name || user.name)
-        setEmail(email || user.email)
-        setDesignation(designation || user.designation)
-        setSelectedImage(avatar || user.avatar) // Update avatar if provided
+        const response = await GetPersonalDetailsProfile(token);
+        const { name, email, designation, avatar } = response.data;
+        setName(name || user.name);
+        setEmail(email || user.email);
+        setDesignation(designation || user.designation);
+        setSelectedImage(avatar || user.avatar);
       } catch (err) {
         setPersonalError(
           err.response?.data?.error || "Failed to load personal details."
-        )
+        );
       }
-    }
+    };
 
-    fetchPersonalDetails()
-  }, []) // Empty dependency array to run once on mount
+    fetchPersonalDetails();
+  }, []);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setSelectedImage(imageUrl)
-      setAvatarFile(file) // Store file for PATCH request
-      // Call onUpdateProfile with the file and temporary URL for persistence
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
+      setAvatarFile(file);
       if (onUpdateProfile) {
-        onUpdateProfile({ ...user, avatar: imageUrl, file })
+        onUpdateProfile({ ...user, avatar: imageUrl, file });
       }
     }
-  }
+  };
 
   // Handle designation input change
   const handleDesignationChange = (e) => {
-    setDesignation(e.target.value)
-  }
+    setDesignation(e.target.value);
+  };
 
   // Handle personal details form submission
   const handlePersonalDataSubmit = async (e) => {
-    e.preventDefault()
-    setPersonalMessage("")
-    setPersonalError("")
+    e.preventDefault();
+    setPersonalMessage("");
+    setPersonalError("");
 
     try {
-      const token = sessionStorage.getItem("token")
+      const token = sessionStorage.getItem("token");
       if (!token) {
-        setPersonalError("You must be logged in to update your profile.")
-        return
+        setPersonalError("You must be logged in to update your profile.");
+        return;
       }
 
       const response = await updatePersonalDetails(
         { designation, file: avatarFile },
         token
-      )
-      setPersonalMessage(response.data.message || "Profile updated successfully.")
+      );
+      setPersonalMessage(
+        response.data.message || "Profile updated successfully."
+      );
       // Update parent component if needed
       if (onUpdateProfile) {
-        onUpdateProfile({ ...user, designation, avatar: selectedImage || user.avatar })
+        onUpdateProfile({
+          ...user,
+          designation,
+          avatar: selectedImage || user.avatar,
+        });
       }
     } catch (err) {
       setPersonalError(
-        err.response?.data?.error || "An error occurred while updating the profile."
-      )
+        err.response?.data?.error ||
+          "An error occurred while updating the profile."
+      );
     }
-  }
+  };
 
   // Handle password input changes
   const handlePasswordChange = (e) => {
     setPasswordData({
       ...passwordData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   // Handle password form submission
   const handlePasswordSubmit = async (e) => {
-    e.preventDefault()
-    setPasswordMessage("")
-    setPasswordError("")
+    e.preventDefault();
+    setPasswordMessage("");
+    setPasswordError("");
 
     try {
-      const token = sessionStorage.getItem("token")
+      const token = sessionStorage.getItem("token");
       if (!token) {
-        setPasswordError("You must be logged in to change your password.")
-        return
+        setPasswordError("You must be logged in to change your password.");
+        return;
       }
 
-      const response = await changePassword(passwordData, token)
-      setPasswordMessage(response.data.message || "Password updated successfully.")
+      const response = await changePassword(passwordData, token);
+      setPasswordMessage(
+        response.data.message || "Password updated successfully."
+      );
       // Reset form
       setPasswordData({
         current_password: "",
         new_password: "",
         confirm_password: "",
-      })
+      });
     } catch (err) {
       setPasswordError(
-        err.response?.data?.error || "An error occurred while updating the password."
-      )
+        err.response?.data?.error ||
+          "An error occurred while updating the password."
+      );
     }
-  }
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -181,8 +185,8 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
               </label>
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">{name}</h1> {/* Use state for display */}
-              <p className="text-gray-500">{email}</p> {/* Use state for display */}
+              <h1 className="text-2xl font-semibold text-gray-900">{name}</h1>
+              <p className="text-gray-500">{email}</p>
             </div>
           </div>
         </div>
@@ -210,27 +214,33 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
           {activeTab === "general" && (
             <form className="space-y-6" onSubmit={handlePersonalDataSubmit}>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
                 <input
                   type="text"
-                  value={name} // Controlled input
+                  value={name}
                   disabled
                   readOnly
                   className="mt-1 block w-full rounded-md border-gray-200 bg-gray-100 text-gray-600 shadow-sm cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
                 <input
                   type="email"
-                  value={email} // Controlled input
+                  value={email}
                   disabled
                   readOnly
                   className="mt-1 block w-full rounded-md border-gray-200 bg-gray-100 text-gray-600 shadow-sm cursor-not-allowed"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Designation</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Designation
+                </label>
                 <input
                   type="text"
                   name="designation"
@@ -239,10 +249,15 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-              {/* Display success or error messages */}
-              {personalMessage && <p className="text-green-600">{personalMessage}</p>}
+
+              {personalMessage && (
+                <p className="text-green-600">{personalMessage}</p>
+              )}
               {personalError && <p className="text-red-600">{personalError}</p>}
-              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              >
                 Save Changes
               </button>
             </form>
@@ -250,14 +265,24 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
 
           {activeTab === "notifications" && (
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Notification Preferences</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                Notification Preferences
+              </h3>
               <div className="space-y-4">
                 <label className="flex items-center gap-3">
-                  <input type="checkbox" defaultChecked className="rounded text-blue-600" />
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="rounded text-blue-600"
+                  />
                   <span>Email notifications for updates</span>
                 </label>
                 <label className="flex items-center gap-3">
-                  <input type="checkbox" defaultChecked className="rounded text-blue-600" />
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="rounded text-blue-600"
+                  />
                   <span>Email notifications for reports</span>
                 </label>
                 <label className="flex items-center gap-3">
@@ -270,10 +295,14 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
 
           {activeTab === "security" && (
             <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900">Security Settings</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                Security Settings
+              </h3>
               <form className="space-y-4" onSubmit={handlePasswordSubmit}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Current Password</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Current Password
+                  </label>
                   <input
                     type="password"
                     name="current_password"
@@ -284,7 +313,9 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">New Password</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    New Password
+                  </label>
                   <input
                     type="password"
                     name="new_password"
@@ -295,7 +326,9 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Confirm New Password
+                  </label>
                   <input
                     type="password"
                     name="confirm_password"
@@ -307,7 +340,10 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
                 </div>
                 {message && <p className="text-green-600">{message}</p>}
                 {error && <p className="text-red-600">{error}</p>}
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                >
                   Update Password
                 </button>
               </form>
@@ -316,5 +352,5 @@ export default function MemberProfile({ user = dummyUser, onUpdateProfile }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

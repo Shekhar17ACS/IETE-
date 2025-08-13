@@ -1,37 +1,27 @@
-import api from "../../components/api/api";  
-import axios from "axios";
-
+import api from "../../components/api/api";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
-
-
 const APiUrl = API_BASE_URL || "http://127.0.0.1:8000/api/v1/";
-
 
 const getApiData = async (apiUrl) => {
   try {
-    const response = await api.get(apiUrl,{
-      withCredentials:"include"
+    const response = await api.get(apiUrl, {
+      withCredentials: "include",
     });
-    return response.data; // Return only relevant data
+    return response.data;
   } catch (error) {
     return { success: false, message: error.message };
   }
 };
 
-
-
 const postData = async (apiUrl, data, config = {}) => {
-
   try {
     const response = await api.post(apiUrl, data, {
       withCredentials: "include",
-      // "Content-Type": "application/json",
       ...config,
     });
     return response.data;
   } catch (error) {
-
-      const errRes = error?.response?.data;
+    const errRes = error?.response?.data;
 
     return {
       success: false,
@@ -41,33 +31,29 @@ const postData = async (apiUrl, data, config = {}) => {
   }
 };
 
-
 // Function to update data (PATCH request)
 const patchData = async (apiUrl, data, token) => {
- 
   try {
     const response = await api.patch(apiUrl, data, {
       headers: {
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       },
-      withCredentials: "include"
+      withCredentials: "include",
     });
     return response.data;
   } catch (error) {
-   
     return { success: false, message: error.message };
   }
-}
+};
 
 // Function to fetch data by ID (GET request)
 const getDataWithId = async (apiUrl, id) => {
   try {
-    const response = await api.get(`${apiUrl}?id=${id}`,{
-      withCredentials:"include"
+    const response = await api.get(`${apiUrl}?id=${id}`, {
+      withCredentials: "include",
     });
     return response.data;
   } catch (error) {
-
     return { success: false, message: error.message };
   }
 };
@@ -75,27 +61,24 @@ const getDataWithId = async (apiUrl, id) => {
 // Function to update data by ID (PUT request)
 const updateDataWithId = async (apiUrl, id, data) => {
   try {
-    const response = await api.put(`${apiUrl}?id=${id}`, data,{
-      withCredentials:"include"
+    const response = await api.put(`${apiUrl}?id=${id}`, data, {
+      withCredentials: "include",
     });
     return response.data;
   } catch (error) {
-    
     return { success: false, message: error.message };
   }
-}
+};
 
 const putData = async (apiUrl, data, token) => {
   try {
     const response = await api.put(apiUrl, data, {
       headers: {
-        // 'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
   } catch (error) {
-    
     return {
       success: false,
       message: error.response?.data?.error || error.message,
@@ -109,7 +92,6 @@ const deleteDataWithId = async (apiUrl, id) => {
     const response = await api.delete(`${apiUrl}${id}/`);
     return response.data;
   } catch (error) {
-   
     return { success: false, message: error.message };
   }
 };
@@ -119,8 +101,7 @@ const deleteConfigData = async (apiUrl, config) => {
     const response = await api.delete(apiUrl, config);
     return response.data;
   } catch (error) {
-  
-    throw error; // Let the caller handle the error
+    throw error;
   }
 };
 
@@ -133,43 +114,48 @@ export const Resister = (data) => {
 // ===========================Forgot Password ===================
 export const forgotPassword = (data) => {
   const apiUrl = `${APiUrl}forgot-password/`;
-  return postData(apiUrl, data); // Data should be { email: "<email>" }
+  return postData(apiUrl, data);
 };
 
 // ===========================Reset Password ===================
-export const resetPassword = ({ new_password, confirm_password, uidb64, token }) => {
+export const resetPassword = ({
+  new_password,
+  confirm_password,
+  uidb64,
+  token,
+}) => {
   const apiUrl = `${APiUrl}reset-password/?uid=${uidb64}&token=${token}`;
   return postData(apiUrl, { new_password, confirm_password });
 };
 
 //========================signin ==========================
 export const login = (data) => {
-    const apiUrl = `${APiUrl}login/`;
-    return postData(apiUrl, data)
-}
+  const apiUrl = `${APiUrl}login/`;
+  return postData(apiUrl, data);
+};
 
 //=======================OTPVerification================
 export const OtpValidate = (data) => {
-   const apiUrl = `${APiUrl}verify-otp/`
-  return postData(apiUrl, data)
-}
+  const apiUrl = `${APiUrl}verify-otp/`;
+  return postData(apiUrl, data);
+};
 
 //======================Resend OTP====================
 export const resendOtp = (data) => {
-  const apiUrl = `${APiUrl}resend-otp/`
-  return postData(apiUrl, data)
-}
+  const apiUrl = `${APiUrl}resend-otp/`;
+  return postData(apiUrl, data);
+};
 
 // =====================Personal Details====================
 export const personalDetails = (data, token) => {
   const apiUrl = `${APiUrl}update-personal-details/`;
-  return patchData(apiUrl, data, token); 
-}
+  return patchData(apiUrl, data, token);
+};
 
 export const GetPersonalDetails = async (token) => {
   const apiUrl = `${APiUrl}update-personal-details/`;
   return getApiData(apiUrl, token);
-}
+};
 // ===========================Qualification API ===================
 const qualificationApiUrl = `${APiUrl}qualification/`;
 
@@ -253,25 +239,28 @@ export const deleteProposer = (id, token) => {
 };
 
 const proposerActionApiUrl = `${APiUrl}proposers/action/`;
-export const getPublicData = (url) => api.get(url).then(res => res.data);
+export const getPublicData = (url) => api.get(url).then((res) => res.data);
 
 export const actOnProposer = (token, action) => {
   const url = `${proposerActionApiUrl}?token=${token}&action=${action}`;
   return getPublicData(url);
 };
 
-
 // ===========================Payment API ===================
 
 // Function to create a payment order
 export const createPaymentOrder = (amount) => {
-  const apiUrl = `${APiUrl}create-order/`; // Directly using the endpoint
+  const apiUrl = `${APiUrl}create-order/`;
   return postData(apiUrl, { amount });
 };
 
 // Function to verify a payment
-export const verifyPayment = (razorpay_order_id, razorpay_payment_id, razorpay_signature) => {
-  const apiUrl = `${APiUrl}verify-payment/`; // Directly using the endpoint
+export const verifyPayment = (
+  razorpay_order_id,
+  razorpay_payment_id,
+  razorpay_signature
+) => {
+  const apiUrl = `${APiUrl}verify-payment/`;
   return postData(apiUrl, {
     razorpay_order_id,
     razorpay_payment_id,
@@ -320,10 +309,9 @@ const membershipFeeApiUrl = `${APiUrl}membership-fee/`;
 
 // Function to fetch all membership fees
 export const getMembershipFees = async () => {
-  const token = sessionStorage.getItem('token'); 
+  const token = sessionStorage.getItem("token");
   return getApiData(membershipFeeApiUrl, token);
 };
-
 
 // ===========================Membership Fee API ===================
 const membershipFeeIdApiUrl = `${APiUrl}save-membership/`;
@@ -331,10 +319,10 @@ const membershipFeeIdApiUrl = `${APiUrl}save-membership/`;
 // Function to save membership fee
 export const saveMembershipFee = async (membershipFeeId) => {
   const apiUrl = `${membershipFeeIdApiUrl}?membership_fee=${membershipFeeId}`;
-  const token = sessionStorage.getItem('token');
-  
+  const token = sessionStorage.getItem("token");
+
   // Call the postData function with the constructed URL
-  return postData(apiUrl, token, {}); // No body data is needed for this request
+  return postData(apiUrl, token, {});
 };
 
 // ===========================Payment History API ===================
@@ -342,7 +330,9 @@ const paymentHistoryApiUrl = `${APiUrl}payment-history/`;
 
 // Function to fetch payment history (all payments, with optional pagination)
 export const getPaymentHistory = async (token, page = null) => {
-  const apiUrl = page ? `${paymentHistoryApiUrl}?page=${page}` : paymentHistoryApiUrl;
+  const apiUrl = page
+    ? `${paymentHistoryApiUrl}?page=${page}`
+    : paymentHistoryApiUrl;
   return getApiData(apiUrl, token);
 };
 
@@ -371,7 +361,7 @@ export const getPaymentStatus = async (token) => {
 // =========================== Role List API ===================
 const roleListApiUrl = `${APiUrl}all-roles/`;
 
-// Function to fetch role list (updated within last 7 days)
+// Function to fetch role list
 export const getRoleList = async (token) => {
   return getApiData(roleListApiUrl, token);
 };
@@ -384,18 +374,21 @@ export const getRoles = async (token, page = null) => {
   const apiUrl = page ? `${rolesApiUrl}?page=${page}` : rolesApiUrl;
   const response = await getApiData(apiUrl, token);
   if (response.success === false) return response;
-  // Handle pagination response { results, next, previous, count }
   return Array.isArray(response.results) ? response.results : response;
 };
 
 // Function to create a new role
 export const createRole = async (data, token) => {
-  return postData(rolesApiUrl, { name: data.name }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    withCredentials: "include",
-  });
+  return postData(
+    rolesApiUrl,
+    { name: data.name },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: "include",
+    }
+  );
 };
 
 // Function to update an existing role
@@ -410,13 +403,15 @@ export const deleteRoles = async (ids, token) => {
     ids.map(async (id) => {
       try {
         const response = await deleteDataWithId(rolesApiUrl, id, token);
-        // Infer success based on response content
         const isSuccess =
-          response.message === "Role deleted successfully" || !!response.deleted_role;
+          response.message === "Role deleted successfully" ||
+          !!response.deleted_role;
         return {
           id,
           success: isSuccess,
-          message: response.message || (isSuccess ? "Deleted successfully" : "Failed to delete"),
+          message:
+            response.message ||
+            (isSuccess ? "Deleted successfully" : "Failed to delete"),
         };
       } catch (error) {
         return {
@@ -432,7 +427,9 @@ export const deleteRoles = async (ids, token) => {
   return {
     success: !hasErrors,
     results,
-    message: hasErrors ? "Some roles failed to delete" : "All roles deleted successfully",
+    message: hasErrors
+      ? "Some roles failed to delete"
+      : "All roles deleted successfully",
   };
 };
 
@@ -444,24 +441,19 @@ export const getPermissionMatrix = async (token) => {
   return getApiData(permissionMatrixApiUrl, token);
 };
 
-
-
-
 export const togglePermission = async (data, token) => {
   try {
     const response = await api.post(permissionMatrixApiUrl, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      withCredentials: "include"
+      withCredentials: "include",
     });
     return response.data;
   } catch (error) {
-
     return { success: false, message: error.message };
   }
 };
-
 
 export const bulkUpdatePermissions = async (data, token) => {
   try {
@@ -469,11 +461,10 @@ export const bulkUpdatePermissions = async (data, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      withCredentials: "include"
+      withCredentials: "include",
     });
     return response.data;
   } catch (error) {
-   
     return { success: false, message: error.message };
   }
 };
@@ -492,13 +483,13 @@ export const getEmployee = async (employeeId, token) => {
 
 export const createEmployee = async (data, token) => {
   return postData(employeesApiUrl, data, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 export const createBulkEmployees = async (data, token) => {
   return postData(employeesApiUrl, data, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -520,44 +511,38 @@ export const getAdminLogs = async () => {
     const response = await api.get(adminLogsApiUrl);
     return response.data;
   } catch (error) {
-    
     return { success: false, message: error.message };
   }
 };
-
-
 
 // =========================== Change Password API ===================
 export const changePassword = async (data, token) => {
   const apiUrl = `${APiUrl}change-password/`;
   return postData(apiUrl, data, {
-    headers: { Authorization: `Bearer ${token}`}    
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
-
 
 //============================avatar update ==========================
 export const updatePersonalDetails = async (data, token) => {
   const apiUrl = `${APiUrl}update-personal-details/`;
   const formData = new FormData();
-  
+
   if (data.department) formData.append("department", data.department);
-  if (data.file) formData.append("avatar", data.file); // File for ImageField
+  if (data.file) formData.append("avatar", data.file);
 
   return patchData(apiUrl, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      // Don't set Content-Type; let the browser set it for FormData
     },
-    method: "PATCH", // Override postData to use PATCH
+    method: "PATCH",
   });
 };
 
 export const GetPersonalDetailsProfile = async (token) => {
   const apiUrl = `${APiUrl}update-personal-details/`;
   return getApiData(apiUrl, token);
-}
-
+};
 
 // =========================== Application List API ===================
 const applicationListApiUrl = `${APiUrl}applications/`;
@@ -570,21 +555,20 @@ export const getApplications = async (token) => {
 };
 
 export const saveApplicationVerification = async (data, token) => {
-  const { user, ...restData } = data; // Extract user and other fields
-  const url = `${applicationListApiUrl}?user_id=${user}`; // Append user_id to query string
+  const { user, ...restData } = data;
+  const url = `${applicationListApiUrl}?user_id=${user}`;
   return postData(url, restData, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 export const updateApplicationVerification = async (data, token) => {
-    const { user, ...restData } = data;
-    const updatedData = { user_id: user, ...restData };
-    return putData(applicationListApiUrl, updatedData, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+  const { user, ...restData } = data;
+  const updatedData = { user_id: user, ...restData };
+  return putData(applicationListApiUrl, updatedData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };
-
 
 // =========================== Approve Membership API ===================
 const approveMembershipApiUrl = `${APiUrl}memberships/`;
@@ -599,12 +583,13 @@ export const approveMembership = async (data, token) => {
 // =========================== Config Settings API ===================
 const configSettingsApiUrl = `${APiUrl}config-settings/`;
 
-
-export const getConfigSetting = async ({ id = null, type = "membership" }, token) => {
+export const getConfigSetting = async (
+  { id = null, type = "membership" },
+  token
+) => {
   const query = id ? `?id=${id}` : `?type=${type}`;
   return getApiData(`${configSettingsApiUrl}${query}`, token);
 };
-
 
 export const saveConfigSetting = async (data, token, type = "membership") => {
   const apiUrl = `${configSettingsApiUrl}?type=${type}`;
@@ -612,7 +597,6 @@ export const saveConfigSetting = async (data, token, type = "membership") => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
-
 
 export const updateConfigSetting = async (data, token) => {
   return patchData(configSettingsApiUrl, data, {
@@ -622,14 +606,15 @@ export const updateConfigSetting = async (data, token) => {
   });
 };
 
-
-export const deleteConfigSetting = async ({ id, type = "membership" }, token) => {
+export const deleteConfigSetting = async (
+  { id, type = "membership" },
+  token
+) => {
   const url = `${configSettingsApiUrl}?id=${id}&type=${type}`;
   return deleteConfigData(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
-
 
 // =================Certificate API==============
 const certificateApiUrl = `${APiUrl}certificate/`;
@@ -639,22 +624,28 @@ export const generateCertificate = async (name, token, email = "") => {
   if (email) params.append("email", email);
 
   const apiUrl = `${certificateApiUrl}?${params.toString()}`;
-  return postData(apiUrl, {}, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return postData(
+    apiUrl,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
 
-
-
-
-
 // =========================== Member Report Export API ===================
-// const memberReportApiUrl = `${APiUrl}members/reports/`;
 
 const memberReportApiUrl = `${APiUrl}members/reports/`;
 
 // Function to export member reports
-export const exportMemberReport = async (format, fields = [], name = null, start_date = null, end_date = null, token) => {
+export const exportMemberReport = async (
+  format,
+  fields = [],
+  name = null,
+  start_date = null,
+  end_date = null,
+  token
+) => {
   try {
     const data = { format, fields };
 
@@ -663,32 +654,33 @@ export const exportMemberReport = async (format, fields = [], name = null, start
         Authorization: `Bearer ${token}`,
       },
       withCredentials: "include",
-      responseType: "blob", // Use blob for all file types
+      responseType: "blob",
     };
 
     let apiUrl = memberReportApiUrl;
     const params = new URLSearchParams();
-    if (name) params.append('name', encodeURIComponent(name));
-    if (start_date) params.append('start_date', start_date);
-    if (end_date) params.append('end_date', end_date);
+    if (name) params.append("name", encodeURIComponent(name));
+    if (start_date) params.append("start_date", start_date);
+    if (end_date) params.append("end_date", end_date);
     if (params.toString()) apiUrl += `?${params.toString()}`;
 
     const response = await api.post(apiUrl, data, config);
 
-    // Validate response
     if (!response.data || response.data.size === 0) {
       throw new Error("Received empty response from server.");
     }
 
-    // Map format to Content-Type
     const contentTypeMap = {
       csv: "text/csv",
-      excel: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      excel:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       pdf: "application/pdf",
     };
-    const contentType = response.headers["content-type"] || contentTypeMap[format] || "application/octet-stream";
+    const contentType =
+      response.headers["content-type"] ||
+      contentTypeMap[format] ||
+      "application/octet-stream";
 
-    // Check if response is JSON (indicating an error)
     if (contentType.includes("application/json")) {
       const text = await new Response(response.data).text();
       let errorMessage = "Unknown error occurred.";
@@ -701,16 +693,14 @@ export const exportMemberReport = async (format, fields = [], name = null, start
       throw new Error(errorMessage);
     }
 
-    // Extract filename from Content-Disposition or use fallback
     const contentDisposition = response.headers["content-disposition"];
     const filename = contentDisposition
-      ? contentDisposition.split("filename=")[1]?.replace(/"/g, "") || `members.${format}`
+      ? contentDisposition.split("filename=")[1]?.replace(/"/g, "") ||
+        `members.${format}`
       : `members.${format}`;
 
-    // Create Blob with explicit type
     const blob = new Blob([response.data], { type: contentType });
 
-    // Create download link
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -725,7 +715,6 @@ export const exportMemberReport = async (format, fields = [], name = null, start
       message: `Member report exported successfully as ${format}`,
     };
   } catch (error) {
-   
     return {
       success: false,
       status: error?.response?.status || 500,
@@ -734,18 +723,14 @@ export const exportMemberReport = async (format, fields = [], name = null, start
   }
 };
 
-
-
 // =========================== Approval Status API ===================
 const approvalStatusApiUrl = `${APiUrl}membership/status/`;
 
 // Function to fetch membership approval status
 export const getApprovalStatus = async (status, token) => {
   const apiUrl = `${approvalStatusApiUrl}?status=${status}`;
-  return getApiData(apiUrl, { headers: { Authorization: `Bearer ${token}` },
-  });
+  return getApiData(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
 };
-
 
 // =========================== ID Card and Certificate API ===================
 const idCardCertificateApiUrl = `${APiUrl}user/id-certificate/`;
@@ -753,7 +738,9 @@ const idCardCertificateApiUrl = `${APiUrl}user/id-certificate/`;
 // Function to fetch ID card, certificate, or both
 export const getIdCardAndCertificate = async (type = "", token) => {
   try {
-    const apiUrl = type ? `${idCardCertificateApiUrl}?type=${type}` : idCardCertificateApiUrl;
+    const apiUrl = type
+      ? `${idCardCertificateApiUrl}?type=${type}`
+      : idCardCertificateApiUrl;
     const response = await api.get(apiUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -765,53 +752,54 @@ export const getIdCardAndCertificate = async (type = "", token) => {
       data: response.data,
     };
   } catch (error) {
-
     return {
       success: false,
       status: error?.response?.status || 500,
-      message: error?.response?.data?.message || "Failed to fetch ID card/certificate.",
+      message:
+        error?.response?.data?.message ||
+        "Failed to fetch ID card/certificate.",
     };
   }
 };
 
-
-
-
-
-
-
-
 // ===========================Pending Payments API ===================
 const pendingPaymentsApiUrl = `${APiUrl}payments/pending-verify/`;
 
-// Get all pending payments (GET)
 export const getPendingPayments = async (token) => {
   return getApiData(pendingPaymentsApiUrl, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
-// Verify multiple payments (POST)
 export const verifyPendingPayments = async (payment_ids, token) => {
-  return postData(pendingPaymentsApiUrl, { payment_ids }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return postData(
+    pendingPaymentsApiUrl,
+    { payment_ids },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
 
 // ===========================Payment Receipts API ===================
 const paymentReceiptsApiUrl = `${APiUrl}payment-receipt/`;
 
-// Generate receipts and optionally send emails (POST)
-export const generatePaymentReceipts = async ({ payment_ids, send_email = false }, token) => {
-  return postData(paymentReceiptsApiUrl, { payment_ids, send_email }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const generatePaymentReceipts = async (
+  { payment_ids, send_email = false },
+  token
+) => {
+  return postData(
+    paymentReceiptsApiUrl,
+    { payment_ids, send_email },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
 
 // ===========================SMS OTP APIs ===================
 const sendSMSOtpApiUrl = `${APiUrl}send-sms/`;
 const verifySMSOtpApiUrl = `${APiUrl}verify-sms/`;
-
 
 // Send OTP via SMS
 export const sendSMSOtp = async (phone) => {
@@ -825,21 +813,20 @@ export const verifySMSOtp = async (phone, otp) => {
   return postData(apiUrl, { phone, otp });
 };
 
-
 // Function to fetch the Qualification Type
-const qualificationTypeUrl=`${APiUrl}qualification-type/`;
+const qualificationTypeUrl = `${APiUrl}qualification-type/`;
 
 export const getQualificationType = async (token) => {
   return getApiData(qualificationTypeUrl, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
 // Function to fetch the Qualification Branch
-const qualificationBranchUrl=`${APiUrl}qualification-branch/`;
+const qualificationBranchUrl = `${APiUrl}qualification-branch/`;
 export const getQualificationBranch = async (token) => {
   return getApiData(qualificationBranchUrl, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -848,7 +835,7 @@ const centresApiUrl = `${APiUrl}centre/`;
 
 export const getCentres = async (token) => {
   return getApiData(centresApiUrl, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -857,7 +844,7 @@ const subCentresApiUrl = `${APiUrl}sub-centre/`;
 
 export const getSubCentres = async (token) => {
   return getApiData(subCentresApiUrl, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -867,7 +854,7 @@ const subCentreByCentreApiUrl = `${APiUrl}sub-centre/`;
 export const getSubCentresByCentre = async (centreId, token) => {
   const url = `${subCentreByCentreApiUrl}?centre_id=${centreId}`;
   return getApiData(url, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };
 
@@ -877,6 +864,6 @@ const applicationTrackerApiUrl = `${APiUrl}application-tracker/`;
 // Function to fetch application tracker data
 export const getApplicationTracker = async (token) => {
   return getApiData(applicationTrackerApiUrl, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 };

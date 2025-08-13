@@ -1,8 +1,12 @@
-
-
 import React, { useState, useEffect } from "react";
-import { getApprovalStatus } from "../Services/ApiServices/ApiService"; // Adjust path as needed
-import { Loader2, CheckCircle, XCircle, AlertCircle, Filter } from "lucide-react";
+import { getApprovalStatus } from "../Services/ApiServices/ApiService";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Filter,
+} from "lucide-react";
 
 const ApprovalStatus = () => {
   const [status, setStatus] = useState("all");
@@ -30,7 +34,7 @@ const ApprovalStatus = () => {
   };
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token"); // Retrieve token from sessionStorage
+    const token = sessionStorage.getItem("token");
     if (token) {
       fetchApprovalStatus(token);
     } else {
@@ -74,23 +78,26 @@ const ApprovalStatus = () => {
           </div>
         )}
 
-        {/* {error && (
-          <div className="div className="flex items-center gap-2 p-4 bg-red-100 text-red-700 rounded-lg">
-            <AlertCircle className="w-5 h-5" />
-            <span>{error}</span>
-          </div>
-        )} */}
-
         {data && !error && (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="p-3 text-left text-sm font-semibold text-gray-600">Name</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-600">Status</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-600">Approved By</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-600">Remark</th>
-                  <th className="p-3 text-left text-sm font-semibold text-gray-600">Submitted At</th>
+                  <th className="p-3 text-left text-sm font-semibold text-gray-600">
+                    Name
+                  </th>
+                  <th className="p-3 text-left text-sm font-semibold text-gray-600">
+                    Status
+                  </th>
+                  <th className="p-3 text-left text-sm font-semibold text-gray-600">
+                    Approved By
+                  </th>
+                  <th className="p-3 text-left text-sm font-semibold text-gray-600">
+                    Remark
+                  </th>
+                  <th className="p-3 text-left text-sm font-semibold text-gray-600">
+                    Submitted At
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -125,9 +132,6 @@ const ApprovalStatus = () => {
                               <p className="text-sm text-indigo-600 font-medium">
                                 {approver.role || "N/A"}
                               </p>
-                              {/* <p className="text-sm text-indigo-600 font-medium">
-                                {approver.remarks || "N/A"}
-                              </p> */}
                             </div>
                           ))}
                         </div>
@@ -135,17 +139,17 @@ const ApprovalStatus = () => {
                         "N/A"
                       )}
                     </td>
-                    {/* <td className="p-3 text-gray-700">{item.remarks || "N/A"}</td> */}
                     <td className="p-3 text-gray-700">
-                      {item.approved_by && item.approved_by.length > 0 ? (
-                        item.approved_by.map((approver, index) => (
-                          <p key={index} className="text-sm text-indigo-600 font-medium">
-                            {approver.remarks || "N/A"}
-                          </p>
-                        ))
-                      ) : (
-                        "N/A"
-                      )}
+                      {item.approved_by && item.approved_by.length > 0
+                        ? item.approved_by.map((approver, index) => (
+                            <p
+                              key={index}
+                              className="text-sm text-indigo-600 font-medium"
+                            >
+                              {approver.remarks || "N/A"}
+                            </p>
+                          ))
+                        : "N/A"}
                     </td>
                     <td className="p-3 text-gray-700">
                       {item.submitted_at
@@ -157,7 +161,8 @@ const ApprovalStatus = () => {
               </tbody>
             </table>
             <div className="mt-4 text-gray-600">
-              Total Records: <span className="font-semibold">{data.length}</span>
+              Total Records:{" "}
+              <span className="font-semibold">{data.length}</span>
             </div>
           </div>
         )}
@@ -167,8 +172,3 @@ const ApprovalStatus = () => {
 };
 
 export default ApprovalStatus;
-
-
-
-
-

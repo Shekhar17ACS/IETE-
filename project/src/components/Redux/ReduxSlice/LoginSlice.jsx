@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { login } from "../../../Services/ApiServices/ApiService";
 import toast from "react-hot-toast";
@@ -12,7 +11,7 @@ export const Login = createAsyncThunk(
       if (response.token && response.refresh_token) {
         return response; // Return tokens only
       } else {
-        return rejectWithValue("Invalid login Details"); 
+        return rejectWithValue("Invalid login Details");
       }
     } catch (error) {
       return rejectWithValue(error.message || "Login failed");
@@ -66,12 +65,13 @@ const LoginSlice = createSlice({
         // sessionStorage.setItem("role", action.payload.user.role);
         // sessionStorage.setItem("role", JSON.stringify(action.payload.user.role));
         const role = action.payload.user.role;
-        const roleArray = Array.isArray(role) ? role : [role]; 
+        const roleArray = Array.isArray(role) ? role : [role];
         sessionStorage.setItem("role", JSON.stringify(roleArray));
         const permissions = action.payload.user.permissions;
-        const permissionsArray = Array.isArray(permissions) ? permissions : [permissions]; 
+        const permissionsArray = Array.isArray(permissions)
+          ? permissions
+          : [permissions];
         sessionStorage.setItem("permissions", JSON.stringify(permissionsArray));
-
 
         // toast.success("Login successful");
       })

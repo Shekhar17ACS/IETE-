@@ -1,59 +1,63 @@
+"use client";
 
-
-"use client"
-
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "../ui/Button"
-import { toast } from "react-hot-toast"
-import "react-toastify/dist/ReactToastify.css"
-import OTPVerification from "./OTPVerification"
-import { Login, UpdateFormData } from "../Redux/ReduxSlice/LoginSlice"
-import { useSelector, useDispatch } from "react-redux"
-import { Lock, Mail, Eye, EyeOff, Hash } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/Button";
+import { toast } from "react-hot-toast";
+import "react-toastify/dist/ReactToastify.css";
+import OTPVerification from "./OTPVerification";
+import { Login, UpdateFormData } from "../Redux/ReduxSlice/LoginSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { Lock, Mail, Eye, EyeOff, Hash } from "lucide-react";
 
 export function LoginForm() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isIeteLoading, setIsIeteLoading] = useState(false)
-  const [isNewUserLoading, setIsNewUserLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isIeteLoading, setIsIeteLoading] = useState(false);
+  const [isNewUserLoading, setIsNewUserLoading] = useState(false);
   const [rememberIete, setRememberIete] = useState(false);
   const [rememberNewUser, setRememberNewUser] = useState(false);
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
-  const [ieteFormData, setIeteFormData] = useState({membershipId: "", email: "", password: "" }) // Local state for IETE form
-  const [newUserFormData, setNewUserFormData] = useState({ identifier: "", password: "" }) // Local state for New User form
-  const [showIetePassword, setShowIetePassword] = useState(false)
-const [showNewUserPassword, setShowNewUserPassword] = useState(false)
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [ieteFormData, setIeteFormData] = useState({
+    membershipId: "",
+    email: "",
+    password: "",
+  }); // Local state for IETE form
+  const [newUserFormData, setNewUserFormData] = useState({
+    identifier: "",
+    password: "",
+  }); // Local state for New User form
+  const [showIetePassword, setShowIetePassword] = useState(false);
+  const [showNewUserPassword, setShowNewUserPassword] = useState(false);
 
-  const dispatch = useDispatch()
-  const { formData } = useSelector((state) => state.LoginUser)
-
+  const dispatch = useDispatch();
+  const { formData } = useSelector((state) => state.LoginUser);
 
   const handleForgotPassword = () => {
     navigate("/forgot-password");
-  }
+  };
 
   const handleVerifyOtp = (otpInput) => {
     if (otpInput === "123456") {
-      setIsOtpModalOpen(false)
-      toast.success("Login successful! Redirecting...", { autoClose: 2000 })
-      setTimeout(() => navigate("/admin/eligible/step1"), 2000)
+      setIsOtpModalOpen(false);
+      toast.success("Login successful! Redirecting...", { autoClose: 2000 });
+      setTimeout(() => navigate("/admin/eligible/step1"), 2000);
     } else {
-      toast.error("Invalid OTP")
+      toast.error("Invalid OTP");
     }
-  }
+  };
 
   const handleClick = (e) => {
-  e.preventDefault();
-  navigate("/register");
-};
+    e.preventDefault();
+    navigate("/register");
+  };
 
   const handleResendOtp = () => {
     setTimeout(() => {
-      toast.info("OTP resent successfully!")
-    }, 1000)
-  }
+      toast.info("OTP resent successfully!");
+    }, 1000);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -62,7 +66,7 @@ const [showNewUserPassword, setShowNewUserPassword] = useState(false)
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15 },
@@ -71,143 +75,158 @@ const [showNewUserPassword, setShowNewUserPassword] = useState(false)
       y: 0,
       transition: { duration: 0.4, ease: "easeOut" },
     },
-  }
+  };
 
-useEffect(() => {
-  const savedIete = JSON.parse(localStorage.getItem("rememberedIete"));
-  if (savedIete) {
-    setIeteFormData({
-      membershipId: savedIete.membership_id || "",  // 👈 make sure this matches the key used during save
-      email: savedIete.email || savedIete.mobile_number || "",
-      // password: savedIete.password || ""
-      password:  ""
-    });
-    setRememberIete(true);
-  }
+  useEffect(() => {
+    const savedIete = JSON.parse(localStorage.getItem("rememberedIete"));
+    if (savedIete) {
+      setIeteFormData({
+        membershipId: savedIete.membership_id || "", // 👈 make sure this matches the key used during save
+        email: savedIete.email || savedIete.mobile_number || "",
+        // password: savedIete.password || ""
+        password: "",
+      });
+      setRememberIete(true);
+    }
 
-const savedNewUser = JSON.parse(localStorage.getItem("rememberedNewUser"));
-if (savedNewUser) {
-  setNewUserFormData({
-    identifier: savedNewUser.identifier || "",
-    password: savedNewUser.password || ""
-  });
-  setRememberNewUser(true);
-}
-}, []);
-
+    const savedNewUser = JSON.parse(localStorage.getItem("rememberedNewUser"));
+    if (savedNewUser) {
+      setNewUserFormData({
+        identifier: savedNewUser.identifier || "",
+        password: savedNewUser.password || "",
+      });
+      setRememberNewUser(true);
+    }
+  }, []);
 
   // Handle form submission for both IETE and New User forms
-const handleSubmit = async (e, formType) => {
-  e.preventDefault()
-  let dataToSubmit = formType === "iete" ? ieteFormData : newUserFormData
+  const handleSubmit = async (e, formType) => {
+    e.preventDefault();
+    let dataToSubmit = formType === "iete" ? ieteFormData : newUserFormData;
 
-if (formType === "iete") {
-  const { membershipId, email, password } = ieteFormData;
+    if (formType === "iete") {
+      const { membershipId, email, password } = ieteFormData;
 
-  if (!membershipId && !email) {
-    toast.error("Please enter either Membership ID or Email/Mobile.");
-    return;
-  }
+      if (!membershipId && !email) {
+        toast.error("Please enter either Membership ID or Email/Mobile.");
+        return;
+      }
 
-  if (!password || password.trim() === "") {
-    toast.error("Password is required.");
-    return;
-  }
+      if (!password || password.trim() === "") {
+        toast.error("Password is required.");
+        return;
+      }
 
-  if (rememberIete) {
-  const savedData = {
-    membership_id: membershipId.trim(),  // ← Save the membership ID
-    email: email.trim() || "",
-    mobile_number: ""                   // if not used
-    // password: password
-  };
-  localStorage.setItem("rememberedIete", JSON.stringify(savedData));
-}
+      if (rememberIete) {
+        const savedData = {
+          membership_id: membershipId.trim(), // ← Save the membership ID
+          email: email.trim() || "",
+          mobile_number: "", // if not used
+          // password: password
+        };
+        localStorage.setItem("rememberedIete", JSON.stringify(savedData));
+      }
 
+      // Prefer Membership ID if provided
+      if (membershipId) {
+        dataToSubmit = { membership_id: membershipId.trim(), password };
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const mobileRegex = /^\d{10}$/;
 
-  // Prefer Membership ID if provided
-  if (membershipId) {
-    dataToSubmit = { membership_id: membershipId.trim(), password };
-  } else {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const mobileRegex = /^\d{10}$/;
-
-    if (emailRegex.test(email)) {
-      dataToSubmit = { email: email.trim(), password };
-    } else if (mobileRegex.test(email)) {
-      dataToSubmit = { mobile_number: email.trim(), password };
+        if (emailRegex.test(email)) {
+          dataToSubmit = { email: email.trim(), password };
+        } else if (mobileRegex.test(email)) {
+          dataToSubmit = { mobile_number: email.trim(), password };
+        } else {
+          toast.error("Please enter a valid email or 10-digit mobile number.");
+          return;
+        }
+      }
+      setIsIeteLoading(true);
     } else {
-      toast.error("Please enter a valid email or 10-digit mobile number.");
-      return;
-    }
-  }
-  setIsIeteLoading(true);
-}
- else {
-    const { identifier, password } = newUserFormData
-    if (!identifier) {
-      toast.error("Please provide a mobile number, email, or application ID.")
-      return
+      const { identifier, password } = newUserFormData;
+      if (!identifier) {
+        toast.error(
+          "Please provide a mobile number, email, or application ID."
+        );
+        return;
+      }
+
+      if (rememberNewUser) {
+        const savedData = {
+          identifier: newUserFormData.identifier, // just save what user typed
+          // password: newUserFormData.password
+        };
+        localStorage.setItem("rememberedNewUser", JSON.stringify(savedData));
+      } else {
+        localStorage.removeItem("rememberedNewUser");
+      }
+
+      // Classify the identifier
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const mobileRegex = /^\d{10}$/;
+
+      if (emailRegex.test(identifier)) {
+        dataToSubmit = {
+          email: identifier,
+          mobile_number: "",
+          application_id: "",
+          password,
+        };
+      } else if (mobileRegex.test(identifier)) {
+        dataToSubmit = {
+          email: "",
+          mobile_number: identifier,
+          application_id: "",
+          password,
+        };
+      } else {
+        dataToSubmit = {
+          email: "",
+          mobile_number: "",
+          application_id: identifier,
+          password,
+        };
+      }
+      setIsNewUserLoading(true);
     }
 
-if (rememberNewUser) {
-  const savedData = {
-    identifier: newUserFormData.identifier  // just save what user typed
-    // password: newUserFormData.password
+    try {
+      // setIsLoading(true)
+      const resultAction = await dispatch(Login(dataToSubmit));
+      if (Login.fulfilled.match(resultAction)) {
+        toast.success("Successfully logged in");
+        // navigate("/admin/eligible/step1")
+        if (dataToSubmit.membership_id) {
+          navigate("/Memberdashboard");
+        } else {
+          navigate("/admin/eligible/step1");
+        }
+      } else if (Login.rejected.match(resultAction)) {
+        const errorMessage =
+          resultAction.payload?.error ||
+          "Incorrect credentials. Please try again.";
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      // setIsLoading(false)
+      setIsIeteLoading(false);
+      setIsNewUserLoading(false);
+    }
   };
-  localStorage.setItem("rememberedNewUser", JSON.stringify(savedData));
-} else {
-  localStorage.removeItem("rememberedNewUser");
-}
-
-
-    // Classify the identifier
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const mobileRegex = /^\d{10}$/
-
-    if (emailRegex.test(identifier)) {
-      dataToSubmit = { email: identifier, mobile_number: "", application_id: "", password }
-    } else if (mobileRegex.test(identifier)) {
-      dataToSubmit = { email: "", mobile_number: identifier, application_id: "", password }
-    } else {
-      dataToSubmit = { email: "", mobile_number: "", application_id: identifier, password }
-    }
-     setIsNewUserLoading(true);
-  }
-
-  try {
-    // setIsLoading(true)
-    const resultAction = await dispatch(Login(dataToSubmit))
-    if (Login.fulfilled.match(resultAction)) {
-      toast.success("Successfully logged in")
-      // navigate("/admin/eligible/step1")
-  if (dataToSubmit.membership_id) {
-    navigate("/Memberdashboard");
-  } else {
-    navigate("/admin/eligible/step1");
-  }
-    } else if (Login.rejected.match(resultAction)) {
-      const errorMessage = resultAction.payload?.error || "Incorrect credentials. Please try again."
-      toast.error(errorMessage)
-    }
-  } catch (error) {
-    toast.error("An error occurred. Please try again.")
-  } finally {
-    // setIsLoading(false)
-    setIsIeteLoading(false);
-    setIsNewUserLoading(false);
-  }
-}
 
   const handleIeteChange = (e) => {
-    const { name, value } = e.target
-    setIeteFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setIeteFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleNewUserChange = (e) => {
-    const { name, value } = e.target
-    setNewUserFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setNewUserFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-900 px-4 py-6 md:p-6 gap-4 md:gap-10 max-w-full mx-auto">
@@ -415,7 +434,7 @@ if (rememberNewUser) {
                 </div>
                 <input
                   type="text"
-                  // name="email" 
+                  // name="email"
                   name="identifier"
                   // value={newUserFormData.email}
                   value={newUserFormData.identifier}
@@ -447,7 +466,9 @@ if (rememberNewUser) {
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <button
                     type="button"
-                    title={showNewUserPassword ? "Hide password" : "Show password"}
+                    title={
+                      showNewUserPassword ? "Hide password" : "Show password"
+                    }
                     onClick={() => setShowNewUserPassword(!showNewUserPassword)}
                     className="text-gray-400 hover:text-gray-600 focus:outline-none"
                   >
@@ -513,9 +534,7 @@ if (rememberNewUser) {
                 handleClick={handleClick}
                 className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-300 relative after:content-[''] after:absolute after:w-full after:h-[2px] after:bg-blue-600 after:left-0 after:bottom-[-4px] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
               >
-                <button>
-                Register Here
-                </button>
+                <button>Register Here</button>
               </a>{" "}
               to apply for IETE Membership
             </b>

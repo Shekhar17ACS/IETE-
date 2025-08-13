@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -32,141 +23,224 @@ import {
   BiohazardIcon,
   SearchIcon,
   GroupIcon,
-  CreditCardIcon
+  CreditCardIcon,
 } from "lucide-react";
 import { BellAlertIcon } from "@heroicons/react/24/outline";
-import {  hasPermission } from "./utils/permissions";
+import { hasPermission } from "./utils/permissions";
 import { PERMISSION_MAP } from "./utils/permissionMap";
 
-// Fallback role mapping
 const fallbackMap = {
-  "Fellow": "limited",
-  "Member": "limited",
-  "Associate": "limited",
-  "Associate Member": "limited"
+  Fellow: "limited",
+  Member: "limited",
+  Associate: "limited",
+  "Associate Member": "limited",
 };
 
 const menuItems = {
-  // For Admins & Governing Council (use full access)
   admin: [
     {
       group: "Administration",
       icon: BiohazardIcon,
       children: [
-        { label: "Matrix Permission", path: "/Memberdashboard/Matrix", icon: CctvIcon },
-        { label: "Role Management", path: "/Memberdashboard/Role", icon: PersonStandingIcon },
-        { label: "Configuration", path: "/Memberdashboard/Config", icon: Settings2Icon },
-      ]
+        {
+          label: "Matrix Permission",
+          path: "/Memberdashboard/Matrix",
+          icon: CctvIcon,
+        },
+        {
+          label: "Role Management",
+          path: "/Memberdashboard/Role",
+          icon: PersonStandingIcon,
+        },
+        {
+          label: "Configuration",
+          path: "/Memberdashboard/Config",
+          icon: Settings2Icon,
+        },
+      ],
     },
     {
       group: "Management",
       icon: Users,
       children: [
-        { label: "Audit Logs", path: "/Memberdashboard/Audit-log", icon: LogsIcon },
-        { label: "Member Management", path: "/Memberdashboard/add-member", icon: IdCardIcon },
-        { label: "Application Manager", path: "/Memberdashboard/Applicants", icon: User },
+        {
+          label: "Audit Logs",
+          path: "/Memberdashboard/Audit-log",
+          icon: LogsIcon,
+        },
+        {
+          label: "Member Management",
+          path: "/Memberdashboard/add-member",
+          icon: IdCardIcon,
+        },
+        {
+          label: "Application Manager",
+          path: "/Memberdashboard/Applicants",
+          icon: User,
+        },
         { label: "Reports", path: "/Memberdashboard/Reports", icon: FileText },
-        { label: "Approval Status", path: "/Memberdashboard/Approval_Stats", icon: LucideFileBarChart }
-      ]
+        {
+          label: "Approval Status",
+          path: "/Memberdashboard/Approval_Stats",
+          icon: LucideFileBarChart,
+        },
+      ],
     },
     {
       group: "Accounts",
       icon: CreditCardIcon,
       children: [
-        { label: "Payments verification", path: "/Memberdashboard/Accounts", icon: CreditCard },
-      ]
+        {
+          label: "Payments verification",
+          path: "/Memberdashboard/Accounts",
+          icon: CreditCard,
+        },
+      ],
     },
     {
       group: "General",
       icon: LayoutDashboard,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "Profile", path: "/Memberdashboard/MemberProfile", icon: GroupIcon }
-      ]
-    }
+        {
+          label: "Profile",
+          path: "/Memberdashboard/MemberProfile",
+          icon: GroupIcon,
+        },
+      ],
+    },
   ],
 
-  // For Governing Council (reuse admin layout)
   "Governing Council": [
-    // Reuse admin layout if preferred — or create a subset here
     {
       group: "GC Tools",
       icon: BiohazardIcon,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "Applications", path: "/Memberdashboard/Applicants", icon: User },
-        { label: "Approvals", path: "/Memberdashboard/Approval_Stats", icon: LucideFileBarChart },
-        { label: "Audit Logs", path: "/Memberdashboard/Audit-log", icon: LogsIcon }
-      ]
-    }
+        {
+          label: "Applications",
+          path: "/Memberdashboard/Applicants",
+          icon: User,
+        },
+        {
+          label: "Approvals",
+          path: "/Memberdashboard/Approval_Stats",
+          icon: LucideFileBarChart,
+        },
+        {
+          label: "Audit Logs",
+          path: "/Memberdashboard/Audit-log",
+          icon: LogsIcon,
+        },
+      ],
+    },
   ],
 
-  // For Staff
   Staff: [
     {
       group: "Staff Panel",
       icon: Users,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "Applications", path: "/Memberdashboard/Applicants", icon: User },
+        {
+          label: "Applications",
+          path: "/Memberdashboard/Applicants",
+          icon: User,
+        },
         { label: "Reports", path: "/Memberdashboard/Reports", icon: FileText },
-        { label: "Approval Status", path: "/Memberdashboard/Approval_Stats", icon: LucideFileBarChart },
-        { label: "Profile", path: "/Memberdashboard/MemberProfile", icon: GroupIcon },
-      ]
-    }
+        {
+          label: "Approval Status",
+          path: "/Memberdashboard/Approval_Stats",
+          icon: LucideFileBarChart,
+        },
+        {
+          label: "Profile",
+          path: "/Memberdashboard/MemberProfile",
+          icon: GroupIcon,
+        },
+      ],
+    },
   ],
 
-  // For Secretary General (Sec Gen)
   "Sec Gen": [
     {
       group: "Sec Gen Tools",
       icon: Settings,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "Member Overview", path: "/Memberdashboard/add-member", icon: Users },
-        { label: "Audit Logs", path: "/Memberdashboard/Audit-log", icon: LogsIcon },
-        { label: "Profile", path: "/Memberdashboard/MemberProfile", icon: GroupIcon }
-      ]
-    }
+        {
+          label: "Member Overview",
+          path: "/Memberdashboard/add-member",
+          icon: Users,
+        },
+        {
+          label: "Audit Logs",
+          path: "/Memberdashboard/Audit-log",
+          icon: LogsIcon,
+        },
+        {
+          label: "Profile",
+          path: "/Memberdashboard/MemberProfile",
+          icon: GroupIcon,
+        },
+      ],
+    },
   ],
 
-  // For Super Admin
   "Super Admin": [
     {
       group: "System Admin",
       icon: Settings,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "System Configuration", path: "/Memberdashboard/Config", icon: Settings2Icon },
-        { label: "Role Management", path: "/Memberdashboard/Role", icon: PersonStandingIcon },
-        { label: "User Access Logs", path: "/Memberdashboard/Audit-log", icon: LogsIcon },
-      ]
-    }
+        {
+          label: "System Configuration",
+          path: "/Memberdashboard/Config",
+          icon: Settings2Icon,
+        },
+        {
+          label: "Role Management",
+          path: "/Memberdashboard/Role",
+          icon: PersonStandingIcon,
+        },
+        {
+          label: "User Access Logs",
+          path: "/Memberdashboard/Audit-log",
+          icon: LogsIcon,
+        },
+      ],
+    },
   ],
 
-  // For Fellows, Members, Associates (limited access)
   limited: [
     {
       group: "My Dashboard",
       icon: LayoutDashboard,
       children: [
         { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
-        { label: "My Profile", path: "/Memberdashboard/MemberProfile", icon: User },
-        { label: "Certificate", path: "/Memberdashboard/Cert_Id", icon: IdCardIcon }
-      ]
-    }
+        {
+          label: "My Profile",
+          path: "/Memberdashboard/MemberProfile",
+          icon: User,
+        },
+        {
+          label: "Certificate",
+          path: "/Memberdashboard/Cert_Id",
+          icon: IdCardIcon,
+        },
+      ],
+    },
   ],
 
-  // Fallback
   user: [
     {
       group: "General",
       icon: LayoutDashboard,
       children: [
-        { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard }
-      ]
-    }
-  ]
+        { label: "Dashboard", path: "/Memberdashboard", icon: LayoutDashboard },
+      ],
+    },
+  ],
 };
 
 const filterSidebarItemsByPermission = (menuGroups) =>
@@ -175,11 +249,10 @@ const filterSidebarItemsByPermission = (menuGroups) =>
       ...group,
       children: group.children.filter((item) => {
         const permissionCode = PERMISSION_MAP[item.path];
-        return !permissionCode || hasPermission(permissionCode); // keep if no permission needed OR permission exists
+        return !permissionCode || hasPermission(permissionCode);
       }),
     }))
-    .filter((group) => group.children.length > 0); // hide empty groups
-
+    .filter((group) => group.children.length > 0);
 
 export default function MemberSidebar({ role, isOpen, setIsOpen }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -189,7 +262,6 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
   const location = useLocation();
 
   const resolvedRole = fallbackMap[role] || role;
-  // const items = menuItems[resolvedRole] || menuItems.user;
   const rawItems = menuItems[resolvedRole] || menuItems.user;
   const items = filterSidebarItemsByPermission(rawItems);
 
@@ -204,7 +276,12 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isMobile && isOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      if (
+        isMobile &&
+        isOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
         setIsOpen(false);
       }
     };
@@ -221,21 +298,22 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
   const toggleGroup = (groupLabel) => {
     setOpenGroups((prev) => ({
       ...prev,
-      [groupLabel]: !prev[groupLabel]
+      [groupLabel]: !prev[groupLabel],
     }));
   };
 
   // Filter items based on search query
-  const filteredItems = searchQuery.trim() && role === "user"
-    ? items
-        .map((group) => ({
-          ...group,
-          children: group.children.filter((item) =>
-            item.label.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        }))
-        .filter((group) => group.children.length > 0)
-    : items;
+  const filteredItems =
+    searchQuery.trim() && role === "user"
+      ? items
+          .map((group) => ({
+            ...group,
+            children: group.children.filter((item) =>
+              item.label.toLowerCase().includes(searchQuery.toLowerCase())
+            ),
+          }))
+          .filter((group) => group.children.length > 0)
+      : items;
 
   return (
     <>
@@ -254,7 +332,11 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
               transition-all duration-300 ease-in-out`}
           >
             {/* Header */}
-            <div className={`flex items-center justify-center h-16 border-b border-gray-200 ${!isOpen && "md:justify-center"}`}>
+            <div
+              className={`flex items-center justify-center h-16 border-b border-gray-200 ${
+                !isOpen && "md:justify-center"
+              }`}
+            >
               <div className="flex items-center gap-3 mt-4">
                 <img
                   src={IETE}
@@ -288,27 +370,40 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
             )}
 
             {/* Navigation */}
-            <nav className={`space-y-3 px-3 py-6 ${!isOpen && "md:px-0"} overflow-y-auto max-h-[calc(100vh-8rem)]`}>
+            <nav
+              className={`space-y-3 px-3 py-6 ${
+                !isOpen && "md:px-0"
+              } overflow-y-auto max-h-[calc(100vh-8rem)]`}
+            >
               {filteredItems.length === 0 && searchQuery.trim() && (
                 <div className="px-4 py-2 text-sm text-gray-500 italic">
                   No results found
                 </div>
               )}
               {filteredItems.map((group) => {
-                const isExpanded = openGroups[group.group] || searchQuery.trim();
+                const isExpanded =
+                  openGroups[group.group] || searchQuery.trim();
                 const GroupIcon = group.icon;
                 return (
                   <div key={group.group}>
                     <button
                       onClick={() => toggleGroup(group.group)}
                       className={`w-full flex items-center justify-between px-4 py-2 rounded-lg font-semibold text-sm
-                        ${isOpen ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100" : "md:justify-center"}
+                        ${
+                          isOpen
+                            ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                            : "md:justify-center"
+                        }
                         transition-all duration-200 group`}
                     >
                       <div className="flex items-center gap-2">
-                        {GroupIcon && <GroupIcon className="h-4 w-4 text-gray-600 group-hover:text-gray-900" />}
+                        {GroupIcon && (
+                          <GroupIcon className="h-4 w-4 text-gray-600 group-hover:text-gray-900" />
+                        )}
                         {isOpen && (
-                          <span className="uppercase tracking-wide text-xs">{group.group}</span>
+                          <span className="uppercase tracking-wide text-xs">
+                            {group.group}
+                          </span>
                         )}
                       </div>
                       {isOpen && (
@@ -340,15 +435,19 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
                                 to={item.path}
                                 onClick={handleLinkClick}
                                 className={`relative flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300
-                                  ${isActive 
-                                    ? "bg-blue-100 text-blue-700 font-medium" 
-                                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"}
+                                  ${
+                                    isActive
+                                      ? "bg-blue-100 text-blue-700 font-medium"
+                                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                  }
                                   ${!isOpen && "md:justify-center md:px-0"}
                                   group`}
                               >
                                 <Icon className="h-4 w-4 relative z-10 transition-transform duration-300 group-hover:scale-110" />
                                 {isOpen && (
-                                  <span className="text-sm font-medium tracking-wide">{item.label}</span>
+                                  <span className="text-sm font-medium tracking-wide">
+                                    {item.label}
+                                  </span>
                                 )}
                                 {isActive && isOpen && (
                                   <motion.div
@@ -372,17 +471,6 @@ export default function MemberSidebar({ role, isOpen, setIsOpen }) {
                 );
               })}
             </nav>
-
-            {/* Footer */}
-            {/* <div
-              className={`absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 transition-opacity duration-300 ${
-                isOpen ? "opacity-100" : "opacity-0 md:hidden"
-              }`}
-            >
-              <div className="text-xs text-gray-500 text-center font-medium">
-                IETE Dashboard v2.1
-              </div>
-            </div> */}
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getEligibility } from "../../../Services/ApiServices/ApiService"; 
+import { getEligibility } from "../../../Services/ApiServices/ApiService";
 import { toast } from "react-toastify";
-
 
 export const checkEligibility = createAsyncThunk(
   "eligibility/checkEligibility",
   async (token, { getState, rejectWithValue }) => {
     const state = getState();
     if (!token) {
-      token = sessionStorage.getItem('token'); 
+      token = sessionStorage.getItem("token");
     }
 
     if (!token) {
@@ -16,15 +15,17 @@ export const checkEligibility = createAsyncThunk(
     }
 
     try {
-      const response = await getEligibility(token); 
+      const response = await getEligibility(token);
       if (response.success) {
-        return response.data; 
+        return response.data;
       } else {
         return rejectWithValue(response.message || "Eligibility check failed");
       }
     } catch (error) {
       if (error.response) {
-        return rejectWithValue(error.response.data.message || "Something went wrong");
+        return rejectWithValue(
+          error.response.data.message || "Something went wrong"
+        );
       } else {
         return rejectWithValue(error.message || "Something went wrong");
       }
@@ -43,29 +44,29 @@ const eligibilitySlice = createSlice({
   initialState,
   reducers: {
     resetEligibility: (state) => {
-      state.eligible = null; 
-      state.error = null; 
+      state.eligible = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(checkEligibility.pending, (state) => {
         state.loading = true;
-        state.error = null; 
+        state.error = null;
       })
       .addCase(checkEligibility.fulfilled, (state, action) => {
         state.loading = false;
-        state.eligible = action.payload; 
-        toast.success("Eligibility check completed!"); 
+        state.eligible = action.payload;
+        toast.success("Eligibility check completed!");
       })
       .addCase(checkEligibility.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload; 
-        toast.error(action.payload); 
+        state.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });
 
 // Export actions and reducer
 export const { resetEligibility } = eligibilitySlice.actions;
-export default eligibilitySlice.reducer
+export default eligibilitySlice.reducer;

@@ -1,4 +1,3 @@
-
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MemberHeader from "./MemberHeader";
@@ -11,7 +10,7 @@ export default function MemberLayout() {
 
   const user = {
     name: "Shekhar",
-    avatar: "https://i.pravatar.cc/150?img=7"
+    avatar: "https://i.pravatar.cc/150?img=7",
   };
 
   useEffect(() => {

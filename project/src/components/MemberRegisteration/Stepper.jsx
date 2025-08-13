@@ -1,10 +1,13 @@
-
-
 import React from "react";
 import { motion } from "framer-motion";
 import { FaCheckCircle } from "react-icons/fa";
 
-const Stepper = ({ step, onStepClick, completedSteps = [], canNavigateAll = false }) => {
+const Stepper = ({
+  step,
+  onStepClick,
+  completedSteps = [],
+  canNavigateAll = false,
+}) => {
   const steps = [
     "Personal Details",
     "Qualification",
@@ -27,7 +30,6 @@ const Stepper = ({ step, onStepClick, completedSteps = [], canNavigateAll = fals
   };
 
   const handleClick = (index) => {
-
     if (onStepClick && (canNavigateAll || step >= index + 1)) {
       onStepClick(index + 1);
     }
@@ -120,7 +122,10 @@ const Stepper = ({ step, onStepClick, completedSteps = [], canNavigateAll = fals
 
         <div className="hidden sm:flex items-center justify-between w-full space-x-0">
           {steps.map((label, index) => (
-            <div key={index} className="relative flex flex-col items-center w-full group">
+            <div
+              key={index}
+              className="relative flex flex-col items-center w-full group"
+            >
               {index < steps.length - 1 && (
                 <motion.div
                   variants={lineVariants}

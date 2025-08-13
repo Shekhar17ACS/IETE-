@@ -1,36 +1,56 @@
-
-
-
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import { Download, FileText, Table, FileSpreadsheet, Search, AlertCircle, CheckCircle2 } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Included via CDN in index.html
-import { exportMemberReport } from '../Services/ApiServices/ApiService'; // Adjust path to your apiService.js
+import React, { useState, useEffect } from "react";
+import {
+  Download,
+  FileText,
+  Table,
+  FileSpreadsheet,
+  Search,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { exportMemberReport } from "../Services/ApiServices/ApiService";
 
 const MemberReportExport = () => {
-  const [format, setFormat] = useState('csv');
+  const [format, setFormat] = useState("csv");
   const [selectedFields, setSelectedFields] = useState([]);
-  const [nameFilter, setNameFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
 
-  // Hypothetical list of valid fields (replace with API call if available)
   const validFields = [
-    'id', 'email', 'name', 'middle_name', 'last_name', 'membership_id',
-    'title', 'mobile_number', 'date_of_birth', 'gender', 'address1',
-    'address2', 'address3', 'highest_qualification', 'pincode',
-    'father_name', 'mother_name', 'spouse_name', 'from_india', 'country',
-    'state', 'city', 'remarks', 'eligibility', 'exposure',
-    'electronics_experience', 'area_of_specialization', 'role'
+    "id",
+    "email",
+    "name",
+    "middle_name",
+    "last_name",
+    "membership_id",
+    "title",
+    "mobile_number",
+    "date_of_birth",
+    "gender",
+    "address1",
+    "address2",
+    "address3",
+    "highest_qualification",
+    "pincode",
+    "father_name",
+    "mother_name",
+    "spouse_name",
+    "from_india",
+    "country",
+    "state",
+    "city",
+    "remarks",
+    "eligibility",
+    "exposure",
+    "electronics_experience",
+    "area_of_specialization",
+    "role",
   ];
 
   // Handle field selection
@@ -44,8 +64,8 @@ const MemberReportExport = () => {
   const formatDate = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
@@ -56,27 +76,29 @@ const MemberReportExport = () => {
     setMessage(null);
     setError(null);
 
-    const token = sessionStorage.getItem('token'); // Adjust based on your auth setup
+    const token = sessionStorage.getItem("token");
     if (!token) {
-      setError('Authentication token not found. Please log in.');
+      setError("Authentication token not found. Please log in.");
       setIsLoading(false);
       return;
     }
 
     // Validate fields client-side
-    if (selectedFields.length > 0 && selectedFields.some((field) => !validFields.includes(field))) {
-      setError('Invalid fields selected.');
+    if (
+      selectedFields.length > 0 &&
+      selectedFields.some((field) => !validFields.includes(field))
+    ) {
+      setError("Invalid fields selected.");
       setIsLoading(false);
       return;
     }
 
     // Validate dates
     if (startDate && endDate && startDate > endDate) {
-      setError('Start date cannot be after end date.');
+      setError("Start date cannot be after end date.");
       setIsLoading(false);
       return;
     }
-
 
     const response = await exportMemberReport(
       format,
@@ -91,7 +113,7 @@ const MemberReportExport = () => {
     if (response.success) {
       setMessage(response.message);
     } else {
-      setError(response.message || 'Failed to export report.');
+      setError(response.message || "Failed to export report.");
     }
   };
 
@@ -122,9 +144,21 @@ const MemberReportExport = () => {
             </label>
             <div className="flex gap-4">
               {[
-                { value: 'csv', label: 'CSV', icon: <Table className="h-5 w-5" /> },
-                { value: 'xlsx', label: 'Excel', icon: <FileSpreadsheet className="h-5 w-5" /> },
-                { value: 'pdf', label: 'PDF', icon: <FileText className="h-5 w-5" /> },
+                {
+                  value: "csv",
+                  label: "CSV",
+                  icon: <Table className="h-5 w-5" />,
+                },
+                {
+                  value: "xlsx",
+                  label: "Excel",
+                  icon: <FileSpreadsheet className="h-5 w-5" />,
+                },
+                {
+                  value: "pdf",
+                  label: "PDF",
+                  icon: <FileText className="h-5 w-5" />,
+                },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -132,8 +166,8 @@ const MemberReportExport = () => {
                   onClick={() => setFormat(option.value)}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-colors ${
                     format === option.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
                   {option.icon}
@@ -145,7 +179,10 @@ const MemberReportExport = () => {
 
           {/* Name Filter */}
           <div>
-            <label htmlFor="nameFilter" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="nameFilter"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Name Filter (Optional)
             </label>
             <div className="relative">
@@ -164,7 +201,10 @@ const MemberReportExport = () => {
           {/* Date Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="startDate"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Start Date (Optional)
               </label>
               <DatePicker
@@ -180,7 +220,10 @@ const MemberReportExport = () => {
               />
             </div>
             <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="endDate"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 End Date (Optional)
               </label>
               <DatePicker
@@ -213,7 +256,9 @@ const MemberReportExport = () => {
                       onChange={() => handleFieldToggle(field)}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700 capitalize">{field.replace(/_/g, ' ')}</span>
+                    <span className="text-sm text-gray-700 capitalize">
+                      {field.replace(/_/g, " ")}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -226,14 +271,24 @@ const MemberReportExport = () => {
             disabled={isLoading}
             className={`w-full py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors ${
               isLoading
-                ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"

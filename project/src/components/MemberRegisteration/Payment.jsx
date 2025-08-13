@@ -1,16 +1,18 @@
-
 import { useNavigate, useOutletContext } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ThankYouPage from "./ThankYouPage";
 import PaymentFailedPage from "./PaymentFailedPage";
-import { createPaymentOrder, verifyPayment } from "../../Services/ApiServices/ApiService";
+import {
+  createPaymentOrder,
+  verifyPayment,
+} from "../../Services/ApiServices/ApiService";
 
 const Payment = ({ prevStep }) => {
-  const {  handleNextStep, handlePrevStep, resetForm } = useOutletContext();
+  const { handleNextStep, handlePrevStep, resetForm } = useOutletContext();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [paymentId, setPaymentId] = useState('');
+  const [paymentId, setPaymentId] = useState("");
   const [paymentStatus, setPaymentStatus] = useState(null);
 
   useEffect(() => {
@@ -21,39 +23,39 @@ const Payment = ({ prevStep }) => {
   }, []);
 
   const handlePayment = async () => {
- 
-    const response = await createPaymentOrder(); 
-    
+    const response = await createPaymentOrder();
+
     if (response.status && response.status === 200) {
       const options = {
-        key: response.key, 
-        amount: response.amount, 
+        key: response.key,
+        amount: response.amount,
         currency: response.currency,
         name: "Membership Registration",
         description: "Payment for Registration",
-        image: "https://yourlogo.com/logo.png", 
-        order_id: response.order_id, 
+        image: "https://yourlogo.com/logo.png",
+        order_id: response.order_id,
         handler: async (paymentResponse) => {
           setPaymentId(paymentResponse.razorpay_payment_id);
-          alert("Payment Successful! Payment ID: " + paymentResponse.razorpay_payment_id);
+          alert(
+            "Payment Successful! Payment ID: " +
+              paymentResponse.razorpay_payment_id
+          );
           setIsOpen(true);
           setPaymentStatus(true);
 
           const verificationResponse = await verifyPayment(
             response.order_id,
             paymentResponse.razorpay_payment_id,
-            paymentResponse.razorpay_signature,
-            
+            paymentResponse.razorpay_signature
           );
 
-          if (verificationResponse.status && verificationResponse.status === 200) {
-      
+          if (
+            verificationResponse.status &&
+            verificationResponse.status === 200
+          ) {
           } else {
-       
             setPaymentStatus(false);
             setIsOpen(true);
-
-          
           }
         },
         prefill: {
@@ -69,7 +71,6 @@ const Payment = ({ prevStep }) => {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } else {
-  
       setPaymentStatus(false);
       setIsOpen(true);
     }
@@ -117,26 +118,19 @@ const Payment = ({ prevStep }) => {
       </motion.div>
 
       {isOpen && (
-        // <motion.div
-        //   initial={{ opacity: 0 }}
-        //   animate={{ opacity: 1 }}
-        //   exit={{ opacity: 0 }}
-        //   transition={{ duration: 0.5 }}
-        //   className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50"
-        // >
-          <motion.div
-            initial={{ scale: 0.5 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.5 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-md p-8 w-1/2"
-          >
-            {paymentStatus ? (
-              <ThankYouPage transactionNumber={paymentId} />
-            ) : (
-              <PaymentFailedPage transactionNumber={paymentId} />
-            )}
-          </motion.div>
+        <motion.div
+          initial={{ scale: 0.5 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0.5 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-lg shadow-md p-8 w-1/2"
+        >
+          {paymentStatus ? (
+            <ThankYouPage transactionNumber={paymentId} />
+          ) : (
+            <PaymentFailedPage transactionNumber={paymentId} />
+          )}
+        </motion.div>
         // </motion.div>
       )}
     </div>

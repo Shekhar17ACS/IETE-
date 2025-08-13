@@ -1,10 +1,13 @@
-
 // export default OTPVerification;
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/Button";
 import { toast } from "react-hot-toast";
-import { postOtp, UpdateFormData, resendOtpThunk } from "../Redux/ReduxSlice/OtpSlice";
+import {
+  postOtp,
+  UpdateFormData,
+  resendOtpThunk,
+} from "../Redux/ReduxSlice/OtpSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +21,7 @@ const OTPVerification = ({
   const [otp, setOtp] = useState(["", "", "", "", "", ""]); // Array for 6 OTP digits
   const [error, setError] = useState(null);
   // const [resent, setResent] = useState(false);
-  const [isResending, setIsResending] = useState(false); // 
+  const [isResending, setIsResending] = useState(false); //
   const [resendAttempts, setResendAttempts] = useState(0); // Track resend attempts
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,19 +72,22 @@ const OTPVerification = ({
 
     if (timer > 0) {
       // setError(`Please wait ${Math.floor(timer / 60)}:${("0" + (timer % 60)).slice(-2)} before resending.`);
-      toast.error(`Please wait ${Math.floor(timer / 60)}:${("0" + (timer % 60)).slice(-2)} before resending.`);
+      toast.error(
+        `Please wait ${Math.floor(timer / 60)}:${("0" + (timer % 60)).slice(
+          -2
+        )} before resending.`
+      );
       return;
     }
 
     setIsResending(true);
     dispatch(resendOtpThunk({ email: formDatawithemail?.email }))
       .then((response) => {
-        
-        if (response.type === 'otp/resendOtp/rejected ') {
+        if (response.type === "otp/resendOtp/rejected ") {
           setResendAttempts((prev) => prev + 1); // Increment the resend attempts
           setIsResending(true);
           toast.success(response.payload); // Use the payload message
-        } else if (response.type === 'otp/resendOtp/fulfilled') {
+        } else if (response.type === "otp/resendOtp/fulfilled") {
           // Reset the timer on successful resend
           setTimer(300); // Reset timer to 5 minutes (300 seconds)
           setResendAttempts(0); // Optionally reset attempts on success
@@ -98,56 +104,56 @@ const OTPVerification = ({
       });
   };
 
-
-  
   const handleInputChange = (e, index) => {
-  const { value } = e.target;
+    const { value } = e.target;
 
-  // Handle paste event
-  if (e.type === "paste") {
-    const pastedData = e.clipboardData.getData("text").replace(/\D/g, ""); // Get only digits
-    if (pastedData.length <= 6) {
-      const otpArray = pastedData.padEnd(6, "").split("").slice(0, 6); // Ensure 6 digits
-      dispatch(UpdateFormData({ name: "otp", value: otpArray.join("") }));
-      // Focus the last filled input or the last input
-      const lastFilledIndex = Math.min(pastedData.length - 1, 5);
-      document.getElementById(`otp-${lastFilledIndex}`).focus();
+    // Handle paste event
+    if (e.type === "paste") {
+      const pastedData = e.clipboardData.getData("text").replace(/\D/g, ""); // Get only digits
+      if (pastedData.length <= 6) {
+        const otpArray = pastedData.padEnd(6, "").split("").slice(0, 6); // Ensure 6 digits
+        dispatch(UpdateFormData({ name: "otp", value: otpArray.join("") }));
+        // Focus the last filled input or the last input
+        const lastFilledIndex = Math.min(pastedData.length - 1, 5);
+        document.getElementById(`otp-${lastFilledIndex}`).focus();
+      }
+      return;
     }
-    return;
-  }
 
-  // Handle manual input
-  if (!/^[0-9]?$/.test(value)) return;
+    // Handle manual input
+    if (!/^[0-9]?$/.test(value)) return;
 
-  let otpArray = formData?.otp ? formData.otp.split("") : new Array(6).fill("");
-  otpArray[index] = value;
+    let otpArray = formData?.otp
+      ? formData.otp.split("")
+      : new Array(6).fill("");
+    otpArray[index] = value;
 
-  // Focus navigation for manual input
-  if (value === "") {
-    if (index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      prevInput?.focus();
+    // Focus navigation for manual input
+    if (value === "") {
+      if (index > 0) {
+        const prevInput = document.getElementById(`otp-${index - 1}`);
+        prevInput?.focus();
+      }
+    } else {
+      if (index < 5) {
+        document.getElementById(`otp-${index + 1}`).focus();
+      }
     }
-  } else {
-    if (index < 5) {
-      document.getElementById(`otp-${index + 1}`).focus();
-    }
-  }
 
-  const otpString = otpArray.join("");
-  dispatch(UpdateFormData({ name: "otp", value: otpString }));
-};
-
+    const otpString = otpArray.join("");
+    dispatch(UpdateFormData({ name: "otp", value: otpString }));
+  };
 
   const varifyOtp = () => {
     dispatch(postOtp(formData))
       .then((response) => {
-     
         if (response.payload && response.payload.message) {
           dispatch(UpdateFormData({ name: "otp", value: "" }));
           navigate("/login");
         } else {
-          setError(response.payload.message || "OTP is incorrect. Please try again.");
+          setError(
+            response.payload.message || "OTP is incorrect. Please try again."
+          );
         }
       })
       .catch((error) => {
@@ -161,8 +167,6 @@ const OTPVerification = ({
       UpdateFormData({ name: "email", value: formDatawithemail?.email })
     );
   }, [formDatawithemail]);
-
-
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.92 },
@@ -208,7 +212,6 @@ const OTPVerification = ({
       transition: { duration: 0.25, ease: "easeOut" },
     },
   };
-
 
   return (
     <>

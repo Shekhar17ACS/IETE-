@@ -1,28 +1,25 @@
-
-
-
-
-
-
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { getAdminLogs } from '../Services/ApiServices/ApiService';
-import { format } from 'date-fns';
-import { ChevronDown, ChevronUp, Search, Info, Calendar } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { debounce } from 'lodash';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { getAdminLogs } from "../Services/ApiServices/ApiService";
+import { format } from "date-fns";
+import { ChevronDown, ChevronUp, Search, Info, Calendar } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { debounce } from "lodash";
 
 const AuditLogs = () => {
   const [logs, setLogs] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [actionFilter, setActionFilter] = useState('');
-  const [modelFilter, setModelFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [actionFilter, setActionFilter] = useState("");
+  const [modelFilter, setModelFilter] = useState("");
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
-  const [sortConfig, setSortConfig] = useState({ key: 'timestamp', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({
+    key: "timestamp",
+    direction: "desc",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLog, setSelectedLog] = useState(null);
   const [logsPerPage, setLogsPerPage] = useState(5);
@@ -30,16 +27,23 @@ const AuditLogs = () => {
   const firstFocusableElementRef = useRef(null);
 
   // Debounced search
-  const debouncedSetSearchTerm = useMemo(() => debounce((value) => setSearchTerm(value), 300), []);
+  const debouncedSetSearchTerm = useMemo(
+    () => debounce((value) => setSearchTerm(value), 300),
+    []
+  );
 
   // Memoized action color
   const getActionColor = useMemo(() => {
     return (action) => {
       switch (action?.toLowerCase()) {
-        case 'create': return 'bg-green-100 text-green-800';
-        case 'update': return 'bg-blue-100 text-blue-800';
-        case 'delete': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+        case "create":
+          return "bg-green-100 text-green-800";
+        case "update":
+          return "bg-blue-100 text-blue-800";
+        case "delete":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-gray-100 text-gray-800";
       }
     };
   }, []);
@@ -48,9 +52,9 @@ const AuditLogs = () => {
   const formatTimestamp = useMemo(() => {
     return (timestamp) => {
       try {
-        return format(new Date(timestamp), 'dd MMM yyyy, hh:mm:ss a');
+        return format(new Date(timestamp), "dd MMM yyyy, hh:mm:ss a");
       } catch {
-        return 'Invalid Date';
+        return "Invalid Date";
       }
     };
   }, []);
@@ -66,52 +70,59 @@ const AuditLogs = () => {
           search: searchTerm || undefined,
           action: actionFilter || undefined,
           model: modelFilter || undefined,
-          start_date: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
-          end_date: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
+          start_date: startDate ? format(startDate, "yyyy-MM-dd") : undefined,
+          end_date: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
         };
-    
+
         const response = await getAdminLogs(params);
-    
+
         if (!response.results || !Array.isArray(response.results)) {
-          throw new Error('Invalid response format');
+          throw new Error("Invalid response format");
         }
         setLogs(response.results);
         setTotalCount(response.count || 0);
       } catch (err) {
-       
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
     fetchLogs();
-  }, [currentPage, logsPerPage, searchTerm, actionFilter, modelFilter, startDate, endDate]);
+  }, [
+    currentPage,
+    logsPerPage,
+    searchTerm,
+    actionFilter,
+    modelFilter,
+    startDate,
+    endDate,
+  ]);
 
   // Sorting function
   const handleSort = (key) => {
     setSortConfig((prev) => ({
       key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
   };
 
   // Client-side sorting (fallback)
   const filteredAndSortedLogs = useMemo(() => {
     return [...logs].sort((a, b) => {
-      if (sortConfig.key === 'timestamp') {
-        return sortConfig.direction === 'asc'
+      if (sortConfig.key === "timestamp") {
+        return sortConfig.direction === "asc"
           ? new Date(a.timestamp) - new Date(b.timestamp)
           : new Date(b.timestamp) - new Date(a.timestamp);
       }
       const aValue =
-        sortConfig.key === 'changes.summary'
-          ? a.changes?.summary?.toLowerCase() || ''
-          : a[sortConfig.key]?.toString().toLowerCase() || '';
+        sortConfig.key === "changes.summary"
+          ? a.changes?.summary?.toLowerCase() || ""
+          : a[sortConfig.key]?.toString().toLowerCase() || "";
       const bValue =
-        sortConfig.key === 'changes.summary'
-          ? b.changes?.summary?.toLowerCase() || ''
-          : b[sortConfig.key]?.toString().toLowerCase() || '';
-      return sortConfig.direction === 'asc'
+        sortConfig.key === "changes.summary"
+          ? b.changes?.summary?.toLowerCase() || ""
+          : b[sortConfig.key]?.toString().toLowerCase() || "";
+      return sortConfig.direction === "asc"
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
     });
@@ -124,33 +135,33 @@ const AuditLogs = () => {
   // Export logs to CSV
   const exportToCSV = () => {
     const csv = [
-      ['ID', 'Action', 'Model', 'Summary', 'IP Address', 'Timestamp', 'User'],
+      ["ID", "Action", "Model", "Summary", "IP Address", "Timestamp", "User"],
       ...logs.map((log) => [
         log.id,
         log.action,
         log.model_name,
-        `"${log.changes?.summary || ''}"`,
+        `"${log.changes?.summary || ""}"`,
         log.ip_address,
         formatTimestamp(log.timestamp),
-        log.changes?.user?.email || '',
+        log.changes?.user?.email || "",
       ]),
     ]
-      .map((row) => row.join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+      .map((row) => row.join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'audit_logs.csv';
+    a.download = "audit_logs.csv";
     a.click();
     window.URL.revokeObjectURL(url);
   };
 
   // Clear filters
   const clearFilters = () => {
-    setSearchTerm('');
-    setActionFilter('');
-    setModelFilter('');
+    setSearchTerm("");
+    setActionFilter("");
+    setModelFilter("");
     setDateRange([null, null]);
     setCurrentPage(1);
   };
@@ -167,10 +178,10 @@ const AuditLogs = () => {
         firstFocusableElementRef.current.focus();
       }
       const handleKeyDown = (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === "Escape") {
           setSelectedLog(null);
         }
-        if (e.key === 'Tab') {
+        if (e.key === "Tab") {
           const first = focusableElements[0];
           const last = focusableElements[focusableElements.length - 1];
           if (e.shiftKey && document.activeElement === first) {
@@ -182,8 +193,8 @@ const AuditLogs = () => {
           }
         }
       };
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [selectedLog]);
 
@@ -193,7 +204,10 @@ const AuditLogs = () => {
       <div className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
         <div className="space-y-4">
           {[...Array(logsPerPage)].map((_, i) => (
-            <div key={i} className="h-12 bg-gray-200 animate-pulse rounded"></div>
+            <div
+              key={i}
+              className="h-12 bg-gray-200 animate-pulse rounded"
+            ></div>
           ))}
         </div>
       </div>
@@ -224,7 +238,11 @@ const AuditLogs = () => {
       <div className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
         <div className="text-center py-8 text-gray-500">
           No logs found matching your criteria.
-          {(searchTerm || actionFilter || modelFilter || startDate || endDate) && (
+          {(searchTerm ||
+            actionFilter ||
+            modelFilter ||
+            startDate ||
+            endDate) && (
             <button
               onClick={clearFilters}
               className="ml-2 text-indigo-600 hover:text-indigo-900"
@@ -295,7 +313,11 @@ const AuditLogs = () => {
           >
             Export CSV
           </button>
-          {(searchTerm || actionFilter || modelFilter || startDate || endDate) && (
+          {(searchTerm ||
+            actionFilter ||
+            modelFilter ||
+            startDate ||
+            endDate) && (
             <button
               onClick={clearFilters}
               className="text-indigo-600 hover:text-indigo-900 mt-2 md:mt-0"
@@ -310,54 +332,83 @@ const AuditLogs = () => {
       {/* Table */}
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200" role="grid" aria-label="Audit logs table">
+          <table
+            className="min-w-full divide-y divide-gray-200"
+            role="grid"
+            aria-label="Audit logs table"
+          >
             <thead className="bg-gray-50">
               <tr>
-                {['ID', 'Action', 'Model', 'Summary', 'IP Address', 'Timestamp', 'Details'].map((header) => (
+                {[
+                  "ID",
+                  "Action",
+                  "Model",
+                  "Summary",
+                  "IP Address",
+                  "Timestamp",
+                  "Details",
+                ].map((header) => (
                   <th
                     key={header}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer md:table-cell"
                     onClick={() =>
-                      header !== 'Details' &&
+                      header !== "Details" &&
                       handleSort(
-                        header === 'ID' ? 'id' :
-                        header === 'Action' ? 'action' :
-                        header === 'Model' ? 'model_name' :
-                        header === 'Summary' ? 'changes.summary' :
-                        header === 'IP Address' ? 'ip_address' :
-                        'timestamp'
+                        header === "ID"
+                          ? "id"
+                          : header === "Action"
+                          ? "action"
+                          : header === "Model"
+                          ? "model_name"
+                          : header === "Summary"
+                          ? "changes.summary"
+                          : header === "IP Address"
+                          ? "ip_address"
+                          : "timestamp"
                       )
                     }
                     aria-sort={
                       sortConfig.key ===
-                        (header === 'ID' ? 'id' :
-                         header === 'Action' ? 'action' :
-                         header === 'Model' ? 'model_name' :
-                         header === 'Summary' ? 'changes.summary' :
-                         header === 'IP Address' ? 'ip_address' :
-                         'timestamp') &&
-                      sortConfig.direction === 'asc'
-                        ? 'ascending'
-                        : sortConfig.direction === 'desc'
-                        ? 'descending'
-                        : 'none'
+                        (header === "ID"
+                          ? "id"
+                          : header === "Action"
+                          ? "action"
+                          : header === "Model"
+                          ? "model_name"
+                          : header === "Summary"
+                          ? "changes.summary"
+                          : header === "IP Address"
+                          ? "ip_address"
+                          : "timestamp") && sortConfig.direction === "asc"
+                        ? "ascending"
+                        : sortConfig.direction === "desc"
+                        ? "descending"
+                        : "none"
                     }
                   >
-                    <div className="flex items-center" role="button" aria-label={`Sort by ${header}`}>
+                    <div
+                      className="flex items-center"
+                      role="button"
+                      aria-label={`Sort by ${header}`}
+                    >
                       {header}
                       {sortConfig.key ===
-                        (header === 'ID' ? 'id' :
-                         header === 'Action' ? 'action' :
-                         header === 'Model' ? 'model_name' :
-                         header === 'Summary' ? 'changes.summary' :
-                         header === 'IP Address' ? 'ip_address' :
-                         'timestamp') && (
-                        sortConfig.direction === 'asc' ? (
+                        (header === "ID"
+                          ? "id"
+                          : header === "Action"
+                          ? "action"
+                          : header === "Model"
+                          ? "model_name"
+                          : header === "Summary"
+                          ? "changes.summary"
+                          : header === "IP Address"
+                          ? "ip_address"
+                          : "timestamp") &&
+                        (sortConfig.direction === "asc" ? (
                           <ChevronUp className="h-4 w-4 ml-1" />
                         ) : (
                           <ChevronDown className="h-4 w-4 ml-1" />
-                        )
-                      )}
+                        ))}
                     </div>
                   </th>
                 ))}
@@ -375,21 +426,30 @@ const AuditLogs = () => {
                   </td>
                   <td className="px-6 py-4 block md:table-cell">
                     <span className="md:hidden font-medium">Action:</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getActionColor(log.action)}`}>
-                      {log.action?.charAt(0).toUpperCase() + (log.action?.slice(1) || '')}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getActionColor(
+                        log.action
+                      )}`}
+                    >
+                      {log.action?.charAt(0).toUpperCase() +
+                        (log.action?.slice(1) || "")}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 block md:table-cell">
-                    <span className="md:hidden font-medium">Model:</span> {log.model_name}
+                    <span className="md:hidden font-medium">Model:</span>{" "}
+                    {log.model_name}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate block md:table-cell">
-                    <span className="md:hidden font-medium">Summary:</span> {log.changes?.summary}
+                    <span className="md:hidden font-medium">Summary:</span>{" "}
+                    {log.changes?.summary}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 block md:table-cell">
-                    <span className="md:hidden font-medium">IP Address:</span> {log.ip_address}
+                    <span className="md:hidden font-medium">IP Address:</span>{" "}
+                    {log.ip_address}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 block md:table-cell">
-                    <span className="md:hidden font-medium">Timestamp:</span> {formatTimestamp(log.timestamp)}
+                    <span className="md:hidden font-medium">Timestamp:</span>{" "}
+                    {formatTimestamp(log.timestamp)}
                   </td>
                   <td className="px-6 py-4 text-sm block md:table-cell">
                     <button
@@ -409,8 +469,9 @@ const AuditLogs = () => {
         {/* Pagination */}
         <div className="px-6 py-4 flex flex-col md:flex-row justify-between items-center border-t border-gray-200">
           <div className="text-sm text-gray-700 mb-2 md:mb-0">
-            Showing {(currentPage - 1) * logsPerPage + 1} to{' '}
-            {Math.min(currentPage * logsPerPage, totalCount)} of {totalCount} logs
+            Showing {(currentPage - 1) * logsPerPage + 1} to{" "}
+            {Math.min(currentPage * logsPerPage, totalCount)} of {totalCount}{" "}
+            logs
           </div>
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2">
             <select
@@ -443,10 +504,12 @@ const AuditLogs = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-1 rounded-md ${
-                        currentPage === page ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-300'
+                        currentPage === page
+                          ? "bg-indigo-600 text-white"
+                          : "bg-white border border-gray-300"
                       }`}
                       aria-label={`Go to page ${page}`}
-                      aria-current={currentPage === page ? 'page' : undefined}
+                      aria-current={currentPage === page ? "page" : undefined}
                     >
                       {page}
                     </button>
@@ -455,7 +518,9 @@ const AuditLogs = () => {
                 return null;
               })}
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 rounded-md bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
                 aria-label="Next page"
@@ -478,36 +543,51 @@ const AuditLogs = () => {
             aria-labelledby="log-details-title"
           >
             <div className="p-6">
-              <h2 id="log-details-title" className="text-xl font-bold text-gray-800 mb-4">
+              <h2
+                id="log-details-title"
+                className="text-xl font-bold text-gray-800 mb-4"
+              >
                 Log Details
               </h2>
               <div className="space-y-4">
                 <div>
-                  <span className="font-medium text-gray-700">ID:</span> {selectedLog.id}
+                  <span className="font-medium text-gray-700">ID:</span>{" "}
+                  {selectedLog.id}
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Action:</span>
-                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getActionColor(selectedLog.action)}`}>
-                    {selectedLog.action?.charAt(0).toUpperCase() + (selectedLog.action?.slice(1) || '')}
+                  <span
+                    className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getActionColor(
+                      selectedLog.action
+                    )}`}
+                  >
+                    {selectedLog.action?.charAt(0).toUpperCase() +
+                      (selectedLog.action?.slice(1) || "")}
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Model:</span> {selectedLog.model_name}
+                  <span className="font-medium text-gray-700">Model:</span>{" "}
+                  {selectedLog.model_name}
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Object ID:</span> {selectedLog.object_id}
+                  <span className="font-medium text-gray-700">Object ID:</span>{" "}
+                  {selectedLog.object_id}
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Summary:</span> {selectedLog.changes?.summary}
+                  <span className="font-medium text-gray-700">Summary:</span>{" "}
+                  {selectedLog.changes?.summary}
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">IP Address:</span> {selectedLog.ip_address}
+                  <span className="font-medium text-gray-700">IP Address:</span>{" "}
+                  {selectedLog.ip_address}
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Timestamp:</span> {formatTimestamp(selectedLog.timestamp)}
+                  <span className="font-medium text-gray-700">Timestamp:</span>{" "}
+                  {formatTimestamp(selectedLog.timestamp)}
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">User:</span> {selectedLog.changes?.user?.email}
+                  <span className="font-medium text-gray-700">User:</span>{" "}
+                  {selectedLog.changes?.user?.email}
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Changes:</span>
@@ -520,7 +600,7 @@ const AuditLogs = () => {
             <div className="px-6 py-4 bg-gray-50 border-t rounded-b-lg">
               <button
                 onClick={() => setSelectedLog(null)}
-                onKeyDown={(e) => e.key === 'Enter' && setSelectedLog(null)}
+                onKeyDown={(e) => e.key === "Enter" && setSelectedLog(null)}
                 className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
                 aria-label="Close log details"
               >

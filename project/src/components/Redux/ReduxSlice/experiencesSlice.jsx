@@ -1,5 +1,3 @@
-
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   createExperience,
@@ -22,7 +20,6 @@ export const getExperiencesData = createAsyncThunk(
 
     try {
       const response = await getExperiences(token);
-   
 
       // Handle both single and paginated responses
       let experiences = [];
@@ -44,8 +41,10 @@ export const getExperiencesData = createAsyncThunk(
 
       return { experiences, pagination };
     } catch (error) {
- 
-      const message = error.response?.data?.message || error.message || "Failed to fetch experiences";
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch experiences";
       return rejectWithValue(message);
     }
   }
@@ -69,7 +68,10 @@ export const addExperience = createAsyncThunk(
       formData.append(`organization_name_${idx}`, exp.organization_name || "");
       formData.append(`employee_type_${idx}`, exp.employee_type || "");
       formData.append(`job_title_${idx}`, exp.job_title || "");
-      formData.append(`currently_working_${idx}`, exp.currently_working ? "true" : "false");
+      formData.append(
+        `currently_working_${idx}`,
+        exp.currently_working ? "true" : "false"
+      );
       formData.append(`start_date_${idx}`, exp.start_date || "");
       if (!exp.currently_working && exp.end_date) {
         formData.append(`end_date_${idx}`, exp.end_date);
@@ -81,16 +83,20 @@ export const addExperience = createAsyncThunk(
     try {
       const response = await createExperience(formData, token);
 
-
       if (response.status === "success" && Array.isArray(response.data)) {
         toast.success(response.message || "Experience(s) added successfully!");
         return response.data; // Array of created experiences
       }
       return rejectWithValue(
-        response.errors?.join(", ") || response.message || "Failed to add experience(s)"
+        response.errors?.join(", ") ||
+          response.message ||
+          "Failed to add experience(s)"
       );
     } catch (error) {
-      const message = error.response?.data?.message || error.message || "Failed to add experience(s)";
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to add experience(s)";
       return rejectWithValue(message);
     }
   }
@@ -116,17 +122,20 @@ export const editExperience = createAsyncThunk(
     try {
       const response = await updateExperience(id, data, token);
 
-
       if (response.status === "success" && response.data) {
         toast.success(response.message || "Experience updated successfully!");
         return response.data; // Updated experience object
       }
       return rejectWithValue(
-        response.errors?.join(", ") || response.message || "Failed to update experience"
+        response.errors?.join(", ") ||
+          response.message ||
+          "Failed to update experience"
       );
     } catch (error) {
-
-      const message = error.response?.data?.message || error.message || "Failed to update experience";
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update experience";
       return rejectWithValue(message);
     }
   }
@@ -146,14 +155,12 @@ export const removeExperience = createAsyncThunk(
     try {
       const response = await deleteExperience(experienceId, token);
 
-
       if (response) {
         toast.success(response.message || "Experience deleted successfully!");
         return experienceId; // Return the deleted ID
       }
-      return rejectWithValue(response.message );
+      return rejectWithValue(response.message);
     } catch (error) {
-  
       const message = "Failed to delete experience";
       return rejectWithValue(message);
     }
@@ -208,7 +215,10 @@ const experiencesSlice = createSlice({
     updateExperienceFormEntry: (state, action) => {
       const { index, name, value } = action.payload;
       if (state.formEntries[index]) {
-        state.formEntries[index] = { ...state.formEntries[index], [name]: value };
+        state.formEntries[index] = {
+          ...state.formEntries[index],
+          [name]: value,
+        };
       }
     },
 
@@ -245,7 +255,6 @@ const experiencesSlice = createSlice({
         state.formEntries = action.payload.experiences.length
           ? action.payload.experiences.map(mapExperienceToFormEntry)
           : [{ ...initialState.formEntries[0] }];
-
       })
       .addCase(getExperiencesData.rejected, (state, action) => {
         state.loading = false;
@@ -264,7 +273,6 @@ const experiencesSlice = createSlice({
         state.experiences = [...state.experiences, ...action.payload];
         // Update formEntries with new experiences
         state.formEntries = action.payload.map(mapExperienceToFormEntry);
-
       })
       .addCase(addExperience.rejected, (state, action) => {
         state.loading = false;
@@ -278,14 +286,20 @@ const experiencesSlice = createSlice({
       })
       .addCase(editExperience.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.experiences.findIndex((exp) => exp.id === action.payload.id);
+        const index = state.experiences.findIndex(
+          (exp) => exp.id === action.payload.id
+        );
         if (index !== -1) {
           state.experiences[index] = action.payload;
         }
         // Update corresponding form entry
-        const formIndex = state.formEntries.findIndex((entry) => entry.id === action.payload.id);
+        const formIndex = state.formEntries.findIndex(
+          (entry) => entry.id === action.payload.id
+        );
         if (formIndex !== -1) {
-          state.formEntries[formIndex] = mapExperienceToFormEntry(action.payload);
+          state.formEntries[formIndex] = mapExperienceToFormEntry(
+            action.payload
+          );
         }
       })
       .addCase(editExperience.rejected, (state, action) => {
@@ -300,12 +314,15 @@ const experiencesSlice = createSlice({
       })
       .addCase(removeExperience.fulfilled, (state, action) => {
         state.loading = false;
-        state.experiences = state.experiences.filter((exp) => exp.id !== action.payload);
-        state.formEntries = state.formEntries.filter((entry) => entry.id !== action.payload);
+        state.experiences = state.experiences.filter(
+          (exp) => exp.id !== action.payload
+        );
+        state.formEntries = state.formEntries.filter(
+          (entry) => entry.id !== action.payload
+        );
         if (state.formEntries.length === 0) {
           state.formEntries.push({ ...initialState.formEntries[0] });
         }
-
       })
       .addCase(removeExperience.rejected, (state, action) => {
         state.loading = false;
@@ -325,4 +342,3 @@ export const {
   resetExperienceFormEntries,
 } = experiencesSlice.actions;
 export default experiencesSlice.reducer;
-

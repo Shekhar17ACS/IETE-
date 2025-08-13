@@ -1,131 +1,134 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
-import { Button } from "../ui/Button"
-import { toast } from "react-hot-toast"
-import "react-toastify/dist/ReactToastify.css"
-import OTPVerification from "./OTPVerification"
-import { useSelector, useDispatch } from "react-redux"
-import { UpdateFormData, SignUp } from "../Redux/ReduxSlice/UserSlice"
-import { ArrowRight, CheckCircle, Lock, Mail, Phone, EyeOff, Eye, User } from "lucide-react"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Button } from "../ui/Button";
+import { toast } from "react-hot-toast";
+import "react-toastify/dist/ReactToastify.css";
+import OTPVerification from "./OTPVerification";
+import { useSelector, useDispatch } from "react-redux";
+import { UpdateFormData, SignUp } from "../Redux/ReduxSlice/UserSlice";
+import {
+  ArrowRight,
+  CheckCircle,
+  Lock,
+  Mail,
+  Phone,
+  EyeOff,
+  Eye,
+  User,
+} from "lucide-react";
 
 export function RegisterForm() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  const dispatch = useDispatch()
-  const { formData: formdata } = useSelector((state) => state.user)
-  const [otp, setOtp] = useState("")
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
-  const [otpModel, setOtpModel] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { formData: formdata } = useSelector((state) => state.user);
+  const [otp, setOtp] = useState("");
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otpModel, setOtpModel] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault()
-  //   dispatch(SignUp(formdata))
-  //   setOtpModel(true)
-  //   setOtp("123456")
-  //   setIsOtpModalOpen(true)
-  // }
   const handleSubmit = async (e) => {
-    e.preventDefault()
-  
+    e.preventDefault();
+
     // Validate password length
     if (formdata.password.length < 9) {
       toast.error("Password must be at least 9 characters long.", {
         position: "top-right",
         autoClose: 2000,
-      })
-      return; // Prevent form submission and OTP modal from opening
+      });
+      return;
     }
-  
+
     // Validate password confirmation
     if (formdata.password !== formdata.confirm_password) {
       toast.error("Passwords do not match.", {
         position: "top-right",
         autoClose: 2000,
-      })
-      return; // Prevent form submission and OTP modal from opening
+      });
+      return;
     }
-  
-    // Proceed to open OTP modal if validations are passed
-    // dispatch(SignUp(formdata))
-    // setOtpModel(true)
-    // setOtp("123456")
-    // setIsOtpModalOpen(true)
-      const action = await dispatch(SignUp(formdata));
 
-  if (SignUp.fulfilled.match(action)) {
-    const type = action.payload?.status_type;
+    const action = await dispatch(SignUp(formdata));
 
-    if (type === "new_signup" || type === "inactive_retry") {
-      setOtpModel(true);
-      setIsOtpModalOpen(true);
-    } else if (type === "already_active") {
-      setIsOtpModalOpen(false);
-      setOtpModel(false);
+    if (SignUp.fulfilled.match(action)) {
+      const type = action.payload?.status_type;
+
+      if (type === "new_signup" || type === "inactive_retry") {
+        setOtpModel(true);
+        setIsOtpModalOpen(true);
+      } else if (type === "already_active") {
+        setIsOtpModalOpen(false);
+        setOtpModel(false);
+      }
     }
-  }
-  }
+  };
 
   const onCloseModel = () => {
-    setIsOtpModalOpen(false)
-    setOtpModel(false)
-  }
+    setIsOtpModalOpen(false);
+    setOtpModel(false);
+  };
 
   const getPasswordStrength = (password) => {
-  if (!password) return "";
-  if (password.length < 9) return "Weak";
-  if (password.length >= 9 && /[A-Z]/.test(password) && /\d/.test(password)) return "Strong";
-  return "Medium";
-};
+    if (!password) return "";
+    if (password.length < 9) return "Weak";
+    if (password.length >= 9 && /[A-Z]/.test(password) && /\d/.test(password))
+      return "Strong";
+    return "Medium";
+  };
 
   // const handleChange = (e) => {
   //   dispatch(UpdateFormData(e.target))
   // }
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  dispatch(UpdateFormData({ name, value: name === "email" || name === "last_name" || name === "password" || name === "confirm_password" ? value : value.toUpperCase() }));
-}
+    const { name, value } = e.target;
+    dispatch(
+      UpdateFormData({
+        name,
+        value:
+          name === "email" ||
+          name === "last_name" ||
+          name === "password" ||
+          name === "confirm_password"
+            ? value
+            : value.toUpperCase(),
+      })
+    );
+  };
 
   const handleVerifyOtp = (otpInput) => {
     if (otpInput === "123456") {
-      setIsOtpModalOpen(false)
-      setOtpModel(false)
-      toast.success("Success! OTP validation is done")
-      navigate("/login")
+      setIsOtpModalOpen(false);
+      setOtpModel(false);
+      toast.success("Success! OTP validation is done");
+      navigate("/login");
       toast.success("Registration successful! You can now login.", {
         position: "top-right",
         autoClose: 2000,
-      })
+      });
     } else {
       toast.error("Invalid OTP", {
         position: "top-right",
         autoClose: 2000,
-      })
+      });
     }
-  }
-    const handleClick = (e) => {
-  e.preventDefault();
-  navigate("/terms");
-  navigate("/privacy");
-  navigate("/login")
-};
+  };
+  const handleClick = (e) => {
+    e.preventDefault();
+    navigate("/terms");
+    navigate("/privacy");
+    navigate("/login");
+  };
 
-  // const handleResendOtp = () => {
-  //   setTimeout(() => {
-  //     setOtp("")
-  //     toast.info("OTP resent successfully!")
-  //   }, 1000)
-  // }
   const handleResendOtp = () => {
-  setIsLoading(true);
-  setTimeout(() => {
-    setOtp("123456");
-    setIsLoading(false);
-    toast.info("OTP resent successfully!");
-  }, 1000);
-};
+    setIsLoading(true);
+    setTimeout(() => {
+      setOtp("123456");
+      setIsLoading(false);
+      toast.info("OTP resent successfully!");
+    }, 1000);
+  };
 
   // Animation variants
   const containerVariants = {
@@ -134,7 +137,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
       opacity: 1,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15 },
@@ -143,7 +146,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
       y: 0,
       transition: { duration: 0.4, ease: "easeOut" },
     },
-  }
+  };
 
   const inputVariants = {
     focus: {
@@ -156,7 +159,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
       boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)",
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   return (
     <>
@@ -220,24 +223,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
               </div>
             </motion.div>
 
-            {/* <motion.div variants={itemVariants} className="mt-8">
-              <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center mr-4">
-                    <User className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">Prof. Sunil Mehta</h3>
-                    <p className="text-sm text-gray-400">IETE Fellow Member</p>
-                  </div>
-                </div>
-                <p className="text-gray-300 italic">
-                  "IETE membership has been instrumental in my professional growth. The technical resources and
-                  networking opportunities are unparalleled in the industry."
-                </p>
-              </div>
-            </motion.div> */}
-
             <motion.div variants={itemVariants} className="mt-8">
               <a
                 href="https://www.iete.org/iete-membership/"
@@ -290,97 +275,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
                   </div>
                 </div>
               </motion.div>
-              {/* <motion.div variants={itemVariants} className="flex space-x-3">
-                <div className="w-1/4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                  {formdata?.title === "Other" ? (
-                    <div className="relative">
-                      <motion.input
-                        name="custom_title"
-                        type="text"
-                        value={formdata?.custom_title || ""}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                        placeholder="Custom title"
-                        variants={inputVariants}
-                        whileFocus="focus"
-                      />
-                      <div
-                        className="absolute inset-y-0 right-0 flex items-center pr-2 cursor-pointer"
-                        onClick={() => {
-                          // Reset to default dropdown
-                          const updatedFormData = { ...formdata, title: "" }
-                          dispatch(UpdateFormData({ name: "title", value: "" }))
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 text-gray-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                  ) : (
-                    <motion.select
-                      name="title"
-                      value={formdata?.title || ""}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                      variants={inputVariants}
-                      whileFocus="focus"
-                    >
-                      <option value="">Select</option>
-                      <option value="Mr.">Mr.</option>
-                      <option value="Mrs.">Mrs.</option>
-                      <option value="Miss">Miss</option>
-                      <option value="Ms.">Ms.</option>
-                      <option value="Dr.">Dr.</option>
-                      <option value="Prof.">Prof.</option>
-                      <option value="Other">Other</option>
-                    </motion.select>
-                  )}
-                </div>
-                <div className="w-3/4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <motion.input
-                      name="name"
-                      type="text"
-                      required
-                      value={formdata?.name || ""}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                      placeholder="First name"
-                      variants={inputVariants}
-                      whileFocus="focus"
-                    />
-                  </div>
-                </div>
-              </motion.div> */}
-
-              {/* Middle Name */}
-              {/* <motion.div variants={itemVariants}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Middle Name
-                </label>
-                <motion.input
-                  name="middle_name"
-                  type="text"
-                  value={formdata?.middle_name || ""}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                  placeholder="Middle name (optional)"
-                  variants={inputVariants}
-                  whileFocus="focus"
-                />
-              </motion.div> */}
 
               {/* Last Name */}
               <motion.div variants={itemVariants}>
@@ -391,17 +285,17 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="h-4 w-4 text-gray-400 group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors z-10" />
                   </div>
-                <motion.input
-                  name="last_name"
-                  type="text"
-                  required
-                  value={formdata?.last_name || ""}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                  placeholder="Last name"
-                  variants={inputVariants}
-                  whileFocus="focus"
-                />
+                  <motion.input
+                    name="last_name"
+                    type="text"
+                    required
+                    value={formdata?.last_name || ""}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
+                    placeholder="Last name"
+                    variants={inputVariants}
+                    whileFocus="focus"
+                  />
                 </div>
               </motion.div>
 

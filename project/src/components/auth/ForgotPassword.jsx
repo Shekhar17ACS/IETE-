@@ -1,11 +1,10 @@
+"use client";
 
-"use client"
-
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Button } from "../ui/Button"
-import { toast } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Button } from "../ui/Button";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   forgotPasswordAsync,
   resetPasswordAsync,
@@ -13,78 +12,84 @@ import {
   setNewPassword,
   setEmail,
   clearError,
-} from "../Redux/ReduxSlice/ForgotPasswordSlice"
-import { useDispatch, useSelector } from "react-redux"
-import { ArrowRight, CheckCircle, Lock, Mail, Eye, EyeOff } from "lucide-react"
-import { useLocation, useNavigate } from "react-router-dom"
+} from "../Redux/ReduxSlice/ForgotPasswordSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ArrowRight, CheckCircle, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function ForgotPassword() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { email, isLoading, password, confirm_password, error } = useSelector(
-    (state) => state.forgotPassword,
-  )
-  const [isPasswordReset, setIsPasswordReset] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [emailSubmitted, setEmailSubmitted] = useState(false)
+    (state) => state.forgotPassword
+  );
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
 
-  // Extract uid and token from URL query parameters
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const uid = params.get('uid')
-    const token = params.get('token')
+    const params = new URLSearchParams(location.search);
+    const uid = params.get("uid");
+    const token = params.get("token");
     if (uid && token) {
-      setIsPasswordReset(true) // Show password reset form if uid and token are present
-      setEmailSubmitted(false) // Reset email submitted state
-      dispatch(clearError()) // Clear any previous errors
+      setIsPasswordReset(true);
+      setEmailSubmitted(false);
+      dispatch(clearError());
     } else {
-      setIsPasswordReset(false) // Ensure password reset form is hidden if no uid/token
+      setIsPasswordReset(false);
     }
-  }, [location.search, dispatch])
+  }, [location.search, dispatch]);
 
   const handleEmailSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!email) {
-      toast.error("Please enter your email address")
-      return
+      toast.error("Please enter your email address");
+      return;
     }
     dispatch(forgotPasswordAsync(email)).then((result) => {
-      if (result.type === 'forgotPassword/forgotPasswordAsync/fulfilled') {
-        setEmailSubmitted(true) // Show confirmation message instead of password form
-        // toast.success("Password reset link sent to your email")
+      if (result.type === "forgotPassword/forgotPasswordAsync/fulfilled") {
+        setEmailSubmitted(true);
       }
-    })
-  }
+    });
+  };
 
-    const getPasswordStrength = (password) => {
-  if (!password) return "";
-  if (password.length < 9) return "Weak";
-  if (password.length >= 9 && /[A-Z]/.test(password) && /\d/.test(password)) return "Strong";
-  return "Medium";
-};
+  const getPasswordStrength = (password) => {
+    if (!password) return "";
+    if (password.length < 9) return "Weak";
+    if (password.length >= 9 && /[A-Z]/.test(password) && /\d/.test(password))
+      return "Strong";
+    return "Medium";
+  };
 
   const handleResetPassword = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password !== confirm_password) {
-      toast.error("Passwords do not match")
-      return
+      toast.error("Passwords do not match");
+      return;
     }
-    const params = new URLSearchParams(location.search)
-    const uidb64 = params.get('uid')
-    const token = params.get('token')
+    const params = new URLSearchParams(location.search);
+    const uidb64 = params.get("uid");
+    const token = params.get("token");
     if (!uidb64 || !token) {
-      toast.error("Invalid or missing reset link")
-      return
+      toast.error("Invalid or missing reset link");
+      return;
     }
-    dispatch(resetPasswordAsync({ new_password: password, confirm_password, uidb64, token })).then((result) => {
-      if (result.type === 'forgotPassword/resetPasswordAsync/fulfilled') {
-        toast.success("Password reset successfully")
-        navigate('/login') // Redirect to login on success
+    dispatch(
+      resetPasswordAsync({
+        new_password: password,
+        confirm_password,
+        uidb64,
+        token,
+      })
+    ).then((result) => {
+      if (result.type === "forgotPassword/resetPasswordAsync/fulfilled") {
+        toast.success("Password reset successfully");
+        navigate("/login"); // Redirect to login on success
       }
-    })
-  }
+    });
+  };
 
   // Animation variants
   const containerVariants = {
@@ -93,7 +98,7 @@ export function ForgotPassword() {
       opacity: 1,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15 },
@@ -102,7 +107,7 @@ export function ForgotPassword() {
       y: 0,
       transition: { duration: 0.4, ease: "easeOut" },
     },
-  }
+  };
 
   const inputVariants = {
     focus: {
@@ -115,7 +120,7 @@ export function ForgotPassword() {
       boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)",
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -128,9 +133,12 @@ export function ForgotPassword() {
       >
         <div className="max-w-md mx-auto">
           <motion.div variants={itemVariants} className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">Reset Your Password</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-6">
+              Reset Your Password
+            </h1>
             <p className="text-gray-300 mb-6">
-              Forgot your password? No problem. We'll help you reset it and get back to your account quickly and securely.
+              Forgot your password? No problem. We'll help you reset it and get
+              back to your account quickly and securely.
             </p>
             <div className="space-y-4 mt-8">
               <motion.div variants={itemVariants} className="flex items-center">
@@ -154,12 +162,17 @@ export function ForgotPassword() {
           <motion.div variants={itemVariants} className="mt-8">
             <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
               <p className="text-gray-300 italic">
-                "Your security is our priority. We use industry-standard encryption and verification methods to ensure your account remains protected."
+                "Your security is our priority. We use industry-standard
+                encryption and verification methods to ensure your account
+                remains protected."
               </p>
             </div>
           </motion.div>
           <motion.div variants={itemVariants} className="mt-8">
-            <a href="/login" className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
+            <a
+              href="/login"
+              className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+            >
               Return to login page
               <ArrowRight className="ml-2 h-4 w-4" />
             </a>
@@ -175,7 +188,10 @@ export function ForgotPassword() {
         className="w-full md:w-1/2 bg-white p-8 md:p-12 flex items-center justify-center"
       >
         <div className="w-full max-w-md">
-          <motion.h2 variants={itemVariants} className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+          <motion.h2
+            variants={itemVariants}
+            className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8"
+          >
             {!isPasswordReset ? "Reset Your Password" : "Create New Password"}
           </motion.h2>
 
@@ -183,12 +199,14 @@ export function ForgotPassword() {
             emailSubmitted ? (
               <motion.div variants={itemVariants} className="text-center">
                 <p className="text-gray-700 mb-4">
-                  A password reset link has been sent to your email. Please check your inbox (and spam/junk folder) and click the link to reset your password.
+                  A password reset link has been sent to your email. Please
+                  check your inbox (and spam/junk folder) and click the link to
+                  reset your password.
                 </p>
                 <Button
                   onClick={() => {
-                    setEmailSubmitted(false)
-                    dispatch(setEmail("")) 
+                    setEmailSubmitted(false);
+                    dispatch(setEmail(""));
                   }}
                   className="w-full bg-gradient-to-r from-gray-800 to-gray-900 text-white py-3 rounded-lg font-semibold hover:from-gray-900 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg"
                 >
@@ -198,7 +216,9 @@ export function ForgotPassword() {
             ) : (
               <form onSubmit={handleEmailSubmit} className="space-y-5">
                 <motion.div variants={itemVariants}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Mail className="h-4 w-4 text-gray-400 group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors z-10" />
@@ -231,7 +251,9 @@ export function ForgotPassword() {
           ) : (
             <form onSubmit={handleResetPassword} className="space-y-5">
               <motion.div variants={itemVariants}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 text-gray-400 group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors z-10" />
@@ -277,7 +299,9 @@ export function ForgotPassword() {
                 )}
               </motion.div>
               <motion.div variants={itemVariants}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock className="h-4 w-4 text-gray-400 group-hover:text-blue-500 group-focus-within:text-blue-500 transition-colors z-10" />
@@ -287,7 +311,9 @@ export function ForgotPassword() {
                     type={showConfirmPassword ? "text" : "password"}
                     required
                     value={confirm_password}
-                    onChange={(e) => dispatch(setConfirmPassword(e.target.value))}
+                    onChange={(e) =>
+                      dispatch(setConfirmPassword(e.target.value))
+                    }
                     className="w-full pl-10 pr-10 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
                     placeholder="Confirm new password"
                     variants={inputVariants}
@@ -297,7 +323,9 @@ export function ForgotPassword() {
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="text-gray-400 hover:text-gray-600 focus:outline-none"
                     >
                       {showConfirmPassword ? (
@@ -334,15 +362,27 @@ export function ForgotPassword() {
             </form>
           )}
 
-          <motion.p variants={itemVariants} className="mt-8 text-center text-sm text-gray-600">
+          <motion.p
+            variants={itemVariants}
+            className="mt-8 text-center text-sm text-gray-600"
+          >
             Remember your password?{" "}
-            <a href="/login" className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-300">
+            <a
+              href="/login"
+              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-300"
+            >
               Sign in
             </a>
           </motion.p>
-          <motion.p variants={itemVariants} className="mt-4 text-center text-xs text-gray-500">
+          <motion.p
+            variants={itemVariants}
+            className="mt-4 text-center text-xs text-gray-500"
+          >
             Need help with password reset?{" "}
-            <a href="mailto:support@iete.org" className="text-blue-600 hover:underline">
+            <a
+              href="mailto:support@iete.org"
+              className="text-blue-600 hover:underline"
+            >
               Contact support
             </a>
           </motion.p>
@@ -357,5 +397,5 @@ export function ForgotPassword() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }

@@ -296,11 +296,6 @@ const Config = ({ token }) => {
                     onChange={handleUserSelectChange}
                     className="block w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                   >
-                    {/* {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name || user.email}
-                      </option>
-                    ))} */}
                     {users.map((user) => (
                       <option key={user.id} value={user.id}>
                         {user.name || user.email} — {user.role || "N/A"}

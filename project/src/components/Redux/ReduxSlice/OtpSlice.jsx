@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
-import { OtpValidate, resendOtp } from "../../../Services/ApiServices/ApiService";
+import {
+  OtpValidate,
+  resendOtp,
+} from "../../../Services/ApiServices/ApiService";
 import { useNavigate } from "react-router-dom";
-
 
 export const postOtp = createAsyncThunk(
   "otp/postOtp",
@@ -16,10 +18,9 @@ export const postOtp = createAsyncThunk(
         return rejectWithValue(response.message || "Signup failed");
       }
     } catch (error) {
-      
-        return rejectWithValue(error.message || "Something went wrong");
-      }
+      return rejectWithValue(error.message || "Something went wrong");
     }
+  }
 );
 
 // Async Thunk for Resending OTP
@@ -62,18 +63,15 @@ const otpSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(postOtp.pending, (state,action) => {
+      .addCase(postOtp.pending, (state, action) => {
         state.loading = true;
       })
       .addCase(postOtp.fulfilled, (state, action) => {
-
         state.loading = false;
-        state.data = action.payload?.data || action.payload; // ✅ Ensure `data` is properly assigned
+        state.data = action.payload?.data || action.payload;
         toast.success(action.payload?.message || "postOtp successful!");
-        
       })
       .addCase(postOtp.rejected, (state, action) => {
-
         state.loading = false;
         state.error = action.error.message;
         toast.error(action.payload.error);

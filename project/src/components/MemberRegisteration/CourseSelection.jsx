@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,15 +10,16 @@ import { toast } from "react-hot-toast";
 import { useOutletContext } from "react-router-dom";
 
 const CourseSelection = () => {
-  const {  handleNextStep, handlePrevStep, resetForm } = useOutletContext();
+  const { handleNextStep, handlePrevStep, resetForm } = useOutletContext();
   const dispatch = useDispatch();
-  const { membershipFees, loading, error, formData: reduxFormData } = useSelector(
-    (state) => state.membershipFee
-  );
+  const {
+    membershipFees,
+    loading,
+    error,
+    formData: reduxFormData,
+  } = useSelector((state) => state.membershipFee);
   const [formData, setFormData] = useState({ course: "", courseId: null });
 
-
-  // Fetch membership fees on component mount
   useEffect(() => {
     dispatch(fetchMembershipFees());
   }, [dispatch]);
@@ -55,7 +45,9 @@ const CourseSelection = () => {
     }
 
     try {
-      const result = await dispatch(saveSelectedMembership(formData.courseId)).unwrap();
+      const result = await dispatch(
+        saveSelectedMembership(formData.courseId)
+      ).unwrap();
       // toast.success(result.message || "Membership selection saved successfully!");
       handleNextStep();
     } catch (err) {
@@ -136,17 +128,8 @@ const CourseSelection = () => {
 
       {/* Error State */}
       {error && (
-        <div className="text-center text-red-600 text-lg">
-          Error: {error}
-        </div>
+        <div className="text-center text-red-600 text-lg">Error: {error}</div>
       )}
-
-      {/* No Data State */}
-      {/* {!loading && !error && membershipFees.length === 0 && (
-        <div className="text-center text-gray-600 text-lg">
-          No membership tiers available.
-        </div>
-      )} */}
 
       {/* Course Cards in Two Rows */}
       {!loading && !error && (
@@ -157,12 +140,17 @@ const CourseSelection = () => {
               onClick={() => handleCourseSelect(fee.id, fee.membership_type)}
               whileHover={{
                 scale: 1.04,
-                boxShadow: "0 25px 50px rgba(0, 0, 0, 0.1), 0 0 30px rgba(79, 70, 229, 0.08)",
+                boxShadow:
+                  "0 25px 50px rgba(0, 0, 0, 0.1), 0 0 30px rgba(79, 70, 229, 0.08)",
               }}
               whileTap={{ scale: 0.96 }}
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2, duration: 0.7, ease: "easeOut" }}
+              transition={{
+                delay: index * 0.2,
+                duration: 0.7,
+                ease: "easeOut",
+              }}
               className={`relative p-6 sm:p-8 rounded-2xl border-2 bg-white shadow-lg transition-all duration-500 ${
                 formData.course === fee.membership_type
                   ? "border-indigo-300/80 bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/70 shadow-2xl"
@@ -173,7 +161,9 @@ const CourseSelection = () => {
               <div className="text-center">
                 <h3
                   className={`text-xl sm:text-2xl font-bold ${
-                    formData.course === fee.membership_type ? "text-indigo-700" : "text-gray-900"
+                    formData.course === fee.membership_type
+                      ? "text-indigo-700"
+                      : "text-gray-900"
                   }`}
                   style={{ fontFamily: "'Poppins', sans-serif" }}
                 >
@@ -181,7 +171,9 @@ const CourseSelection = () => {
                 </h3>
                 <p
                   className={`mt-3 text-lg ${
-                    formData.course === fee.membership_type ? "text-indigo-600 font-bold" : "text-gray-600 font-bold"
+                    formData.course === fee.membership_type
+                      ? "text-indigo-600 font-bold"
+                      : "text-gray-600 font-bold"
                   }`}
                   style={{ fontFamily: "'Roboto', sans-serif" }}
                 >
@@ -192,7 +184,9 @@ const CourseSelection = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handleCourseSelect(fee.id, fee.membership_type)}
+                  onClick={() =>
+                    handleCourseSelect(fee.id, fee.membership_type)
+                  }
                   className={`mt-6 w-full py-3 rounded-lg font-semibold text-sm transition-all duration-300 ${
                     formData.course === fee.membership_type
                       ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white"
@@ -200,14 +194,18 @@ const CourseSelection = () => {
                   }`}
                   style={{ fontFamily: "'Poppins', sans-serif" }}
                 >
-                  {formData.course === fee.membership_type ? "SELECTED" : `Go WITH ${fee.membership_type}`}
+                  {formData.course === fee.membership_type
+                    ? "SELECTED"
+                    : `Go WITH ${fee.membership_type}`}
                 </motion.button>
 
                 {/* Features List */}
                 <div className="mt-8 text-left">
                   <h4
                     className={`text-xs font-semibold uppercase tracking-wide ${
-                      formData.course === fee.membership_type ? "text-indigo-600" : "text-gray-500"
+                      formData.course === fee.membership_type
+                        ? "text-indigo-600"
+                        : "text-gray-500"
                     }`}
                     style={{ fontFamily: "'Poppins', sans-serif" }}
                   >
@@ -218,7 +216,9 @@ const CourseSelection = () => {
                       <li
                         key={idx}
                         className={`flex items-center text-sm ${
-                          formData.course === fee.membership_type ? "text-indigo-600" : "text-gray-600"
+                          formData.course === fee.membership_type
+                            ? "text-indigo-600"
+                            : "text-gray-600"
                         }`}
                         style={{ fontFamily: "'Roboto', sans-serif" }}
                       >
@@ -237,7 +237,10 @@ const CourseSelection = () => {
       {/* Buttons */}
       <div className="w-full py-10 flex flex-col sm:flex-row justify-between items-center mt-12 gap-6 sm:gap-0">
         <motion.button
-          whileHover={{ scale: 1.06, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }}
+          whileHover={{
+            scale: 1.06,
+            boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)",
+          }}
           whileTap={{ scale: 0.94 }}
           onClick={handlePrevStep}
           className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white font-semibold rounded-full shadow-xl hover:from-gray-900 hover:to-black transition-all duration-500 border border-gray-700/30"
@@ -246,7 +249,10 @@ const CourseSelection = () => {
           ← Previous Step
         </motion.button>
         <motion.button
-          whileHover={{ scale: 1.06, boxShadow: "0 15px 30px rgba(79, 70, 229, 0.3)" }}
+          whileHover={{
+            scale: 1.06,
+            boxShadow: "0 15px 30px rgba(79, 70, 229, 0.3)",
+          }}
           whileTap={{ scale: 0.94 }}
           onClick={handleSubmit}
           disabled={!formData.course || loading}

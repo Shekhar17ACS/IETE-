@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,7 +15,12 @@ import {
   Trash,
   Users,
 } from "lucide-react";
-import { getRoles, createRole, updateRole, deleteRoles } from "../Services/ApiServices/ApiService";
+import {
+  getRoles,
+  createRole,
+  updateRole,
+  deleteRoles,
+} from "../Services/ApiServices/ApiService";
 
 const RoleManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -111,7 +115,11 @@ const RoleManagement = () => {
       return;
     }
 
-    const response = await updateRole(updateRoleData.id, { name: updateRoleData.name }, token);
+    const response = await updateRole(
+      updateRoleData.id,
+      { name: updateRoleData.name },
+      token
+    );
     if (response.success === false) {
       setError(response.message || "Failed to update role.");
       setSaveStatus(null);
@@ -129,50 +137,58 @@ const RoleManagement = () => {
   };
 
   const handleDeleteRoles = async () => {
-  setSaveStatus("saving");
-  setError(null);
-  const token = sessionStorage.getItem("token");
-  if (!token) {
-    setError("No authentication token found. Please log in.");
-    setSaveStatus(null);
-    return;
-  }
-
-  const response = await deleteRoles(rolesToDelete, token);
-
-  if (response.success === false) {
-    const successfulDeletions = response.results.filter((r) => r.success).map((r) => r.id);
-    const failedDeletions = response.results.filter((r) => !r.success);
-
-    if (successfulDeletions.length > 0) {
-      setRoles((prev) => prev.filter((role) => !successfulDeletions.includes(role.id)));
+    setSaveStatus("saving");
+    setError(null);
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      setError("No authentication token found. Please log in.");
+      setSaveStatus(null);
+      return;
     }
 
-    if (failedDeletions.length > 0) {
-      setError(
-        `Failed to delete ${failedDeletions.length} role(s): ${failedDeletions
-          .map((r) => r.message || "Unknown error")
-          .join(", ")}`
-      );
-      setSaveStatus(null);
+    const response = await deleteRoles(rolesToDelete, token);
+
+    if (response.success === false) {
+      const successfulDeletions = response.results
+        .filter((r) => r.success)
+        .map((r) => r.id);
+      const failedDeletions = response.results.filter((r) => !r.success);
+
+      if (successfulDeletions.length > 0) {
+        setRoles((prev) =>
+          prev.filter((role) => !successfulDeletions.includes(role.id))
+        );
+      }
+
+      if (failedDeletions.length > 0) {
+        setError(
+          `Failed to delete ${failedDeletions.length} role(s): ${failedDeletions
+            .map((r) => r.message || "Unknown error")
+            .join(", ")}`
+        );
+        setSaveStatus(null);
+      } else {
+        setSaveStatus("success");
+        setTimeout(() => setSaveStatus(null), 3000);
+      }
     } else {
+      setRoles((prev) =>
+        prev.filter((role) => !rolesToDelete.includes(role.id))
+      );
       setSaveStatus("success");
       setTimeout(() => setSaveStatus(null), 3000);
     }
-  } else {
-    setRoles((prev) => prev.filter((role) => !rolesToDelete.includes(role.id)));
-    setSaveStatus("success");
-    setTimeout(() => setSaveStatus(null), 3000);
-  }
 
-  setRolesToDelete([]);
-  setShowDeleteModal(false);
-};
+    setRolesToDelete([]);
+    setShowDeleteModal(false);
+  };
 
   // Toggle role selection for deletion
   const toggleRoleSelection = (roleId) => {
     setRolesToDelete((prev) =>
-      prev.includes(roleId) ? prev.filter((id) => id !== roleId) : [...prev, roleId]
+      prev.includes(roleId)
+        ? prev.filter((id) => id !== roleId)
+        : [...prev, roleId]
     );
   };
 
@@ -225,7 +241,8 @@ const RoleManagement = () => {
         {error && (
           <div className="p-4 bg-red-50 text-red-600 border-b border-red-200">
             {/* {error} */}
-            You do not have permission to access this page. Please contact your administrator.
+            You do not have permission to access this page. Please contact your
+            administrator.
           </div>
         )}
 
@@ -244,7 +261,10 @@ const RoleManagement = () => {
                   <th className="text-left p-4 font-medium text-gray-600 w-1/12">
                     <input
                       type="checkbox"
-                      checked={rolesToDelete.length === filteredRoles.length && filteredRoles.length > 0}
+                      checked={
+                        rolesToDelete.length === filteredRoles.length &&
+                        filteredRoles.length > 0
+                      }
                       onChange={() =>
                         setRolesToDelete(
                           rolesToDelete.length === filteredRoles.length
@@ -255,10 +275,18 @@ const RoleManagement = () => {
                       className="h-5 w-5 border border-gray-300 rounded checked:bg-blue-600 checked:border-blue-600 focus:outline-none cursor-pointer"
                     />
                   </th>
-                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">ROLE NAME</th>
-                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">CREATED AT</th>
-                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">UPDATED AT</th>
-                  <th className="text-center p-4 font-medium text-gray-600 w-2/12">ACTIONS</th>
+                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">
+                    ROLE NAME
+                  </th>
+                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">
+                    CREATED AT
+                  </th>
+                  <th className="text-left p-4 font-medium text-gray-600 w-3/12">
+                    UPDATED AT
+                  </th>
+                  <th className="text-center p-4 font-medium text-gray-600 w-2/12">
+                    ACTIONS
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -288,8 +316,10 @@ const RoleManagement = () => {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() =>
-                            setUpdateRoleData({ id: role.id, name: role.name }) &
-                            setShowUpdateModal(true)
+                            setUpdateRoleData({
+                              id: role.id,
+                              name: role.name,
+                            }) & setShowUpdateModal(true)
                           }
                           className="p-2 text-blue-600 hover:text-blue-800"
                           title="Edit Role"
@@ -297,7 +327,10 @@ const RoleManagement = () => {
                           <Edit size={16} />
                         </button>
                         <button
-                          onClick={() => setRolesToDelete([role.id]) & setShowDeleteModal(true)}
+                          onClick={() =>
+                            setRolesToDelete([role.id]) &
+                            setShowDeleteModal(true)
+                          }
                           className="p-2 text-red-600 hover:text-red-800"
                           title="Delete Role"
                         >
@@ -391,7 +424,10 @@ const RoleManagement = () => {
                   type="text"
                   value={updateRoleData.name}
                   onChange={(e) =>
-                    setUpdateRoleData({ ...updateRoleData, name: e.target.value })
+                    setUpdateRoleData({
+                      ...updateRoleData,
+                      name: e.target.value,
+                    })
                   }
                   placeholder="Enter role name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -444,8 +480,8 @@ const RoleManagement = () => {
                 </button>
               </div>
               <p className="text-sm text-gray-600 mb-4">
-                Are you sure you want to delete {rolesToDelete.length} role(s)? This action
-                cannot be undone.
+                Are you sure you want to delete {rolesToDelete.length} role(s)?
+                This action cannot be undone.
               </p>
               <div className="flex justify-end gap-2">
                 <button

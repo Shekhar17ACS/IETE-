@@ -1,65 +1,62 @@
+"use client";
 
-"use client"
-
-import { useState, useRef, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { User, LogOut, Menu, X, IdCardIcon } from "lucide-react"
-import { GetPersonalDetailsProfile } from "../Services/ApiServices/ApiService"
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { User, LogOut, Menu, X, IdCardIcon } from "lucide-react";
+import { GetPersonalDetailsProfile } from "../Services/ApiServices/ApiService";
 
 export default function MemberHeader({ user, isOpen, setIsOpen }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const [fetchedUser, setFetchedUser] = useState(null) // Store fetched user data
-  const [error, setError] = useState("") // Store API errors
-  const dropdownRef = useRef(null)
-  const navigate = useNavigate()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [fetchedUser, setFetchedUser] = useState(null);
+  const [error, setError] = useState("");
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false)
+        setIsDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.addEventListener("mousedown", handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.addEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Fetch user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = sessionStorage.getItem("token")
+        const token = sessionStorage.getItem("token");
         if (!token) {
-          setError("No authentication found.")
-          return
+          setError("No authentication found.");
+          return;
         }
 
-        const response = await GetPersonalDetailsProfile(token)
-        setFetchedUser(response.data) // Store fetched data
+        const response = await GetPersonalDetailsProfile(token);
+        setFetchedUser(response.data);
       } catch (err) {
-        setError(
-          err.response?.data?.error || "Failed to load user profile."
-        )
+        setError(err.response?.data?.error || "Failed to load user profile.");
       }
-    }
+    };
 
-    fetchUserData()
-  }, []) // Empty dependency array to run once on mount
+    fetchUserData();
+  }, []);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token") // or sessionStorage.clear()
-    sessionStorage.clear()
-    navigate("/login")
-  }
+    sessionStorage.removeItem("token");
+    sessionStorage.clear();
+    navigate("/login");
+  };
 
   return (
     <header
@@ -81,8 +78,6 @@ export default function MemberHeader({ user, isOpen, setIsOpen }) {
         </button>
 
         <div className="flex items-center gap-4">
-          
-
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -90,7 +85,7 @@ export default function MemberHeader({ user, isOpen, setIsOpen }) {
             >
               <div className="relative w-10 h-10 sm:w-12 sm:h-12 transition-all duration-500 ease-in-out">
                 <img
-                  src={fetchedUser?.avatar || user.avatar || "/placeholder.svg"} // Use fetched avatar
+                  src={fetchedUser?.avatar || user.avatar || "/placeholder.svg"}
                   alt={fetchedUser?.name || user.name}
                   className="w-full h-full rounded-full object-cover border-2 border-gray-600 transition-all duration-500 ease-in-out shadow-sm hover:shadow-md"
                 />
@@ -104,8 +99,8 @@ export default function MemberHeader({ user, isOpen, setIsOpen }) {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border animate-fadeIn transition-all duration-500 ease-in-out">
                 <button
                   onClick={() => {
-                    navigate("/Memberdashboard/MemberProfile")
-                    setIsDropdownOpen(false)
+                    navigate("/Memberdashboard/MemberProfile");
+                    setIsDropdownOpen(false);
                   }}
                   className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
@@ -115,13 +110,13 @@ export default function MemberHeader({ user, isOpen, setIsOpen }) {
                 {/* <hr className="my-1" /> */}
                 <button
                   onClick={() => {
-                    navigate("/Memberdashboard/Cert_Id")
-                    setIsDropdownOpen(false)
+                    navigate("/Memberdashboard/Cert_Id");
+                    setIsDropdownOpen(false);
                   }}
                   className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                 >
                   <IdCardIcon className="w-4 h-4" />
-                   ID Card & Cert.
+                  ID Card & Cert.
                 </button>
                 <hr className="my-1" />
                 <button
@@ -143,5 +138,5 @@ export default function MemberHeader({ user, isOpen, setIsOpen }) {
         </div>
       )}
     </header>
-  )
+  );
 }

@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -26,14 +24,19 @@ import {
   Plus,
   Bell,
 } from "lucide-react";
-import { getPermissionMatrix, togglePermission, bulkUpdatePermissions, getRoleList } from "../Services/ApiServices/ApiService";
+import {
+  getPermissionMatrix,
+  togglePermission,
+  bulkUpdatePermissions,
+  getRoleList,
+} from "../Services/ApiServices/ApiService";
 
 const Matrix = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("Role Based");
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState([]);
-  const [roles, setRoles] = useState([]); // Store { name, apiName, icon }
+  const [roles, setRoles] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [saveStatus, setSaveStatus] = useState(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -94,9 +97,11 @@ const Matrix = () => {
       } else {
         const rolesData = Array.isArray(roleResponse.data)
           ? roleResponse.data.map((role) => ({
-              name: normalizeRoleName(role.name), // UI name
-              apiName: role.name, // Raw API name
-              icon: roleIconMap[normalizeRoleName(role.name)] || <User size={16} />,
+              name: normalizeRoleName(role.name),
+              apiName: role.name,
+              icon: roleIconMap[normalizeRoleName(role.name)] || (
+                <User size={16} />
+              ),
             }))
           : [];
         setRoles(rolesData);
@@ -111,11 +116,20 @@ const Matrix = () => {
         let permissionsData = [];
         if (Array.isArray(permissionResponse)) {
           permissionsData = permissionResponse;
-        } else if (permissionResponse.data && Array.isArray(permissionResponse.data)) {
+        } else if (
+          permissionResponse.data &&
+          Array.isArray(permissionResponse.data)
+        ) {
           permissionsData = permissionResponse.data;
-        } else if (permissionResponse.results && Array.isArray(permissionResponse.results)) {
+        } else if (
+          permissionResponse.results &&
+          Array.isArray(permissionResponse.results)
+        ) {
           permissionsData = permissionResponse.results;
-        } else if (permissionResponse.permissions && Array.isArray(permissionResponse.permissions)) {
+        } else if (
+          permissionResponse.permissions &&
+          Array.isArray(permissionResponse.permissions)
+        ) {
           permissionsData = permissionResponse.permissions;
         } else {
           setError("Unexpected response format from permissions API.");
@@ -167,7 +181,10 @@ const Matrix = () => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((permission) =>
         permission.id === permissionId
-          ? { ...permission, roles: { ...permission.roles, [role.apiName]: checked } }
+          ? {
+              ...permission,
+              roles: { ...permission.roles, [role.apiName]: checked },
+            }
           : permission
       )
     );
@@ -178,7 +195,10 @@ const Matrix = () => {
       setPermissions((prevPermissions) =>
         prevPermissions.map((permission) =>
           permission.id === permissionId
-            ? { ...permission, roles: { ...permission.roles, [role.apiName]: !checked } }
+            ? {
+                ...permission,
+                roles: { ...permission.roles, [role.apiName]: !checked },
+              }
             : permission
         )
       );
@@ -195,7 +215,10 @@ const Matrix = () => {
       setPermissions((prevPermissions) =>
         prevPermissions.map((permission) =>
           permission.id === permissionId
-            ? { ...permission, roles: { ...permission.roles, [role.apiName]: !checked } }
+            ? {
+                ...permission,
+                roles: { ...permission.roles, [role.apiName]: !checked },
+              }
             : permission
         )
       );
@@ -216,17 +239,20 @@ const Matrix = () => {
     const payloads = roles.map((role) => {
       const permissionsForRole = {};
       permissions.forEach((permission) => {
-        permissionsForRole[permission.id] = permission.roles[role.apiName] || false;
+        permissionsForRole[permission.id] =
+          permission.roles[role.apiName] || false;
       });
       return { role: role.apiName, permissions: permissionsForRole };
     });
-
 
     try {
       for (const payload of payloads) {
         const response = await bulkUpdatePermissions(payload, token);
         if (response.success === false) {
-          throw new Error(response.message || `Failed to update permissions for ${payload.role}`);
+          throw new Error(
+            response.message ||
+              `Failed to update permissions for ${payload.role}`
+          );
         }
       }
       setSaveStatus("success");
@@ -366,9 +392,7 @@ const Matrix = () => {
             No permissions found.
           </div>
         ) : roles.length === 0 && !error ? (
-          <div className="p-4 text-center text-gray-500">
-            No roles found.
-          </div>
+          <div className="p-4 text-center text-gray-500">No roles found.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -459,7 +483,9 @@ const Matrix = () => {
                               <div className="relative inline-block">
                                 <input
                                   type="checkbox"
-                                  checked={permission.roles[role.apiName] || false}
+                                  checked={
+                                    permission.roles[role.apiName] || false
+                                  }
                                   onChange={(e) =>
                                     handlePermissionChange(
                                       permission.id,

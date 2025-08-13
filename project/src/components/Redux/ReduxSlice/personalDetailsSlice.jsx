@@ -1,6 +1,8 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { personalDetails, GetPersonalDetails } from "../../../Services/ApiServices/ApiService"; // Import the API service for updating personal details
+import {
+  personalDetails,
+  GetPersonalDetails,
+} from "../../../Services/ApiServices/ApiService"; // Import the API service for updating personal details
 import { toast } from "react-hot-toast";
 
 // Async Thunk Action for updating personal details
@@ -10,21 +12,22 @@ export const updatePersonalDetails = createAsyncThunk(
     const state = getState();
     let token = state.LoginUser?.token || sessionStorage.getItem("token");
 
-
     if (!token) {
       return rejectWithValue("Token is not available. Please log in again.");
     }
 
     try {
-      const response = await personalDetails(data, token); 
-      if (response.status && response.status === 200) { 
-        return response.data; 
+      const response = await personalDetails(data, token);
+      if (response.status && response.status === 200) {
+        return response.data;
       } else {
         return rejectWithValue(response.message || "Update failed");
       }
     } catch (error) {
       if (error.response) {
-        return rejectWithValue(error.response.data.message || "Something went wrong");
+        return rejectWithValue(
+          error.response.data.message || "Something went wrong"
+        );
       } else {
         return rejectWithValue(error.message || "Something went wrong");
       }
@@ -44,16 +47,19 @@ export const fetchPersonalDetails = createAsyncThunk(
     }
 
     try {
-      const response = await GetPersonalDetails({}, token); 
+      const response = await GetPersonalDetails({}, token);
       if (response.status === 200) {
-        return response.data; 
+        return response.data;
       } else {
-        return rejectWithValue(response.message || "Failed to fetch personal details");
+        return rejectWithValue(
+          response.message || "Failed to fetch personal details"
+        );
       }
     } catch (error) {
-     
       const errorMessage =
-        error.response?.data?.message || error.message || "Something went wrong";
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong";
       return rejectWithValue(errorMessage);
     }
   }
@@ -90,8 +96,7 @@ const initialState = {
   data: null,
   formData: defaultFormData,
   error: null,
-}
-
+};
 
 const personalDetailsSlice = createSlice({
   name: "personalDetails",
@@ -99,31 +104,28 @@ const personalDetailsSlice = createSlice({
   reducers: {
     updateFormData: (state, action) => {
       state.formData[action.payload.name] = action.payload.value;
-
     },
     resetFormData: (state) => {
-
       state.formData = defaultFormData;
-
     },
   },
   extraReducers: (builder) => {
     builder
-    // Fetch personal details
+      // Fetch personal details
       .addCase(fetchPersonalDetails.pending, (state) => {
         state.loading = true;
-        state.error = null; 
+        state.error = null;
       })
       .addCase(fetchPersonalDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.formData = {...defaultFormData, ...action.payload}; 
+        state.formData = { ...defaultFormData, ...action.payload };
         state.data = action.payload;
-        })
-        .addCase(fetchPersonalDetails.rejected, (state, action) => {
+      })
+      .addCase(fetchPersonalDetails.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload; 
-        toast.error(action.payload); 
-        })
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
       .addCase(updatePersonalDetails.pending, (state) => {
         state.loading = true;
         state.error = null; // Reset error on new request
@@ -131,13 +133,11 @@ const personalDetailsSlice = createSlice({
       .addCase(updatePersonalDetails.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload; // Store the response data
-        toast.success("Personal details updated successfully!"); 
+        toast.success("Personal details updated successfully!");
       })
       .addCase(updatePersonalDetails.rejected, (state, action) => {
-
         state.loading = false;
         state.error = action.payload; // Store the error message
-
       });
   },
 });
