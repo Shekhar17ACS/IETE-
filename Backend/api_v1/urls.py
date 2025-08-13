@@ -13,7 +13,7 @@ def test_view(request):
 urlpatterns = [
     path('test/', test_view),
     path('signup/', SignupAPIView.as_view()),
-    path('login/', LoginAPIView.as_view()),
+    path('login/', RoleLoginAPIView.as_view()),
     path("stats/", DashboardStatsAPIView.as_view(), name="dashboard-stats"),
     path('forgot-password/', RequestPasswordResetAPIView.as_view()),
     path('reset-password/', ResetPasswordAPIView.as_view()),
@@ -59,12 +59,11 @@ urlpatterns = [
     
     path("permissions-matrix/", PermissionMatrixView.as_view(), name="permission-matrix"),
     
-    # path('memberships/', ApproveMembershipAPIView.as_view(),name='approve-member'),
+
     path('config-settings/', ConfigSettingAPIView.as_view(),name="config-setting"),
-    # path('config-settings/', ConfigSettingCreateAPIView.as_view(),name="config-setting"),
+
     path("applications/", ApplicationListAPIView.as_view(), name="application-list"),
-    
-    # path("config-setting/create/",ConfigSettingAPIView.as_view(),name="config-setting"),
+
     path('membership/approve/', ApproveMembershipAPIView.as_view(),name='approve-member'),
     
     path('membership/status/', ApprovalStatus.as_view(),name='approve-status'),

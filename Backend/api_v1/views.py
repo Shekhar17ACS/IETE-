@@ -632,130 +632,7 @@ class DashboardStatsAPIView(APIView):
         })    
     
 
-class LoginAPIView(APIView):
-    """ API to authenticate users using multiple login methods """
-
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get("email")
-        mobile_number = request.data.get("mobile_number")
-        application_id = request.data.get("application_id")
-        password = request.data.get("password")
-        otp = request.data.get("otp")
-
-        session = request.session
-
-        # Case 1: Login with Email & Password
-        if email and password:
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            if not user.is_active:
-                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
-
-            if not user.check_password(password):
-                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-
-            return self.generate_login_response(user)
-
-        # Case 2: Login with Mobile Number & Password
-        elif mobile_number and password:
-            try:
-                user = User.objects.get(mobile_number=mobile_number)
-            except User.DoesNotExist:
-                return Response({"error": "User with this mobile number does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            if not user.is_active:
-                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
-
-            if not user.check_password(password):
-                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-
-            return self.generate_login_response(user)
-
-        # Case 3: Login with Application ID & Password
-        elif application_id and password:
-            try:
-                user = User.objects.get(application_id=application_id)
-            except User.DoesNotExist:
-                return Response({"error": "User with this application ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            if not user.is_active:
-                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
-
-            if not user.check_password(password):
-                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-
-            return self.generate_login_response(user)
-
-        # Case 4: Login with Email & OTP
-        elif email and otp:
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            return self.verify_otp_login(session, user, otp)
-
-        # Case 5: Login with Application ID & OTP
-        elif application_id and otp:
-            try:
-                user = User.objects.get(application_id=application_id)
-            except User.DoesNotExist:
-                return Response({"error": "User with this application ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-
-            return self.verify_otp_login(session, user, otp)
-
-        else:
-            return Response({"error": "Invalid login credentials."}, status=status.HTTP_400_BAD_REQUEST)
-
-    def generate_login_response(self, user):
-        """ Generate response upon successful login """
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-        return Response({
-            "message": "Login successful.",
-            "user": {
-
-                "id": user.id,
-                "email": user.email,
-                "mobile_number": user.mobile_number,
-                "application_id": user.application_id,
-                "name": user.name
-            },
-            "token": access_token,
-            "refresh_token": str(refresh)
-        }, status=status.HTTP_200_OK)
-
-    def verify_otp_login(self, session, user, otp_input):
-        """ Verify OTP for login """
-        stored_otp = session.get("otp")
-        otp_expiry_str = session.get("otp_expires_at")
-
-        if not stored_otp or stored_otp != otp_input:
-            return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not otp_expiry_str:
-            return Response({"error": "OTP expiration time not found. Request a new OTP."}, status=status.HTTP_400_BAD_REQUEST)
-
-        otp_expiry = timezone.datetime.fromisoformat(otp_expiry_str)
-
-        if timezone.now() > otp_expiry:
-            return Response({"error": "OTP has expired. Request a new OTP."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Clear OTP session after successful verification
-        for key in ["otp", "otp_expires_at", "email"]:
-            session.pop(key, None)
-        session.modified = True
-
-        return self.generate_login_response(user)
-
-
-
-# class RoleLoginAPIView(APIView):
+# class LoginAPIView(APIView):
 #     """ API to authenticate users using multiple login methods """
 
 #     permission_classes = [AllowAny]
@@ -764,7 +641,6 @@ class LoginAPIView(APIView):
 #         email = request.data.get("email")
 #         mobile_number = request.data.get("mobile_number")
 #         application_id = request.data.get("application_id")
-#         membership_id = request.data.get("membership_id")
 #         password = request.data.get("password")
 #         otp = request.data.get("otp")
 
@@ -815,18 +691,6 @@ class LoginAPIView(APIView):
 
 #             return self.generate_login_response(user)
 
-#         # Case 4: Login with Membership ID & Password
-#         elif membership_id and password:
-#             try:
-#                 user = User.objects.get(membership_id=membership_id)
-#             except User.DoesNotExist:
-#                 return Response({"error": "User with this membership ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-#             if not user.is_active:
-#                 return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
-#             if not user.check_password(password):
-#                 return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
-#             return self.generate_login_response(user)
-
 #         # Case 4: Login with Email & OTP
 #         elif email and otp:
 #             try:
@@ -851,31 +715,21 @@ class LoginAPIView(APIView):
 #     def generate_login_response(self, user):
 #         """ Generate response upon successful login """
 #         refresh = RefreshToken.for_user(user)
-
-#         # Add custom claims to the token
-#         refresh['user_id'] = str(user.id)
-#         refresh['username'] = user.username
-#         refresh['email'] = user.email
-#         refresh['role'] = user.role.name if user.role else None
-#         # 🔥 Add all permission codenames like: "app_label.view_model"
-#         permissions = list(user.get_all_permissions())
-
+#         access_token = str(refresh.access_token)
 #         return Response({
 #             "message": "Login successful.",
 #             "user": {
-#                 "id": str(user.id),
+
+#                 "id": user.id,
 #                 "email": user.email,
-#                 "role": user.role.name if user.role else None,
 #                 "mobile_number": user.mobile_number,
 #                 "application_id": user.application_id,
-#                 "membership_id": user.membership_id,
-#                 "name": user.name,
-#                 "permissions": permissions  # ✅ Add this
+#                 "name": user.name
 #             },
-#             "token": str(refresh.access_token),
-#             "refresh_token": str(refresh),            
+#             "token": access_token,
+#             "refresh_token": str(refresh)
 #         }, status=status.HTTP_200_OK)
-        
+
 #     def verify_otp_login(self, session, user, otp_input):
 #         """ Verify OTP for login """
 #         stored_otp = session.get("otp")
@@ -898,6 +752,152 @@ class LoginAPIView(APIView):
 #         session.modified = True
 
 #         return self.generate_login_response(user)
+
+
+
+class RoleLoginAPIView(APIView):
+    """ API to authenticate users using multiple login methods """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        mobile_number = request.data.get("mobile_number")
+        application_id = request.data.get("application_id")
+        membership_id = request.data.get("membership_id")
+        password = request.data.get("password")
+        otp = request.data.get("otp")
+
+        session = request.session
+
+        # Case 1: Login with Email & Password
+        if email and password:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not user.is_active:
+                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
+
+            if not user.check_password(password):
+                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+
+            return self.generate_login_response(user)
+
+        # Case 2: Login with Mobile Number & Password
+        elif mobile_number and password:
+            try:
+                user = User.objects.get(mobile_number=mobile_number)
+            except User.DoesNotExist:
+                return Response({"error": "User with this mobile number does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not user.is_active:
+                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
+
+            if not user.check_password(password):
+                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+
+            return self.generate_login_response(user)
+
+        # Case 3: Login with Application ID & Password
+        elif application_id and password:
+            try:
+                user = User.objects.get(application_id=application_id)
+            except User.DoesNotExist:
+                return Response({"error": "User with this application ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not user.is_active:
+                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
+
+            if not user.check_password(password):
+                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+
+            return self.generate_login_response(user)
+
+        # Case 4: Login with Membership ID & Password
+        elif membership_id and password:
+            try:
+                user = User.objects.get(membership_id=membership_id)
+            except User.DoesNotExist:
+                return Response({"error": "User with this membership ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            if not user.is_active:
+                return Response({"error": "User account is inactive. Verify OTP first."}, status=status.HTTP_403_FORBIDDEN)
+            if not user.check_password(password):
+                return Response({"error": "Invalid password."}, status=status.HTTP_400_BAD_REQUEST)
+            return self.generate_login_response(user)
+
+        # Case 4: Login with Email & OTP
+        elif email and otp:
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            return self.verify_otp_login(session, user, otp)
+
+        # Case 5: Login with Application ID & OTP
+        elif application_id and otp:
+            try:
+                user = User.objects.get(application_id=application_id)
+            except User.DoesNotExist:
+                return Response({"error": "User with this application ID does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+            return self.verify_otp_login(session, user, otp)
+
+        else:
+            return Response({"error": "Invalid login credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+    def generate_login_response(self, user):
+        """ Generate response upon successful login """
+        refresh = RefreshToken.for_user(user)
+
+        # Add custom claims to the token
+        refresh['user_id'] = str(user.id)
+        refresh['username'] = user.username
+        refresh['email'] = user.email
+        refresh['role'] = user.role.name if user.role else None
+        # 🔥 Add all permission codenames like: "app_label.view_model"
+        permissions = list(user.get_all_permissions())
+
+        return Response({
+            "message": "Login successful.",
+            "user": {
+                "id": str(user.id),
+                "email": user.email,
+                "role": user.role.name if user.role else None,
+                "mobile_number": user.mobile_number,
+                "application_id": user.application_id,
+                "membership_id": user.membership_id,
+                "name": user.name,
+                "permissions": permissions  # ✅ Add this
+            },
+            "token": str(refresh.access_token),
+            "refresh_token": str(refresh),            
+        }, status=status.HTTP_200_OK)
+        
+    def verify_otp_login(self, session, user, otp_input):
+        """ Verify OTP for login """
+        stored_otp = session.get("otp")
+        otp_expiry_str = session.get("otp_expires_at")
+
+        if not stored_otp or stored_otp != otp_input:
+            return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not otp_expiry_str:
+            return Response({"error": "OTP expiration time not found. Request a new OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        otp_expiry = timezone.datetime.fromisoformat(otp_expiry_str)
+
+        if timezone.now() > otp_expiry:
+            return Response({"error": "OTP has expired. Request a new OTP."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Clear OTP session after successful verification
+        for key in ["otp", "otp_expires_at", "email"]:
+            session.pop(key, None)
+        session.modified = True
+
+        return self.generate_login_response(user)
 
 
 class RequestPasswordResetAPIView(APIView):
